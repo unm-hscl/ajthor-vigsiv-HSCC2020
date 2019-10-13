@@ -15,10 +15,10 @@ clc, clear, close all
 q = 1;
 params.n_copters = 1;
 params.N = 1;
-params.Xmin = -10;
-params.Xmax = 10;
-params.Ymin = -10;
-params.Ymax = 10;
+params.Xmin = -20;
+params.Xmax = 20;
+params.Ymin = -30;
+params.Ymax = 20;
 params.Tmin = -1;
 params.Tmax = 1;
 
@@ -64,7 +64,6 @@ m = size(Xs, 2);
 %
 % The kernel (Gram) matrix is defined as K_ij = K(x, x'). Here, we use the
 % Gaussian kernel with a bandwidth parameter sigma.
-
 
 K = zeros(m);
 
@@ -121,31 +120,27 @@ end
 Beta = exp(-Beta/(2*0.1^2));
 
 Beta = W\Beta;
-Beta = Beta./(sum(Beta, 1)+ eps);
+Beta = Beta./(sum(Beta, 1));
 
 %% Compute the transition probabilities.
 Pr = zeros(N, mt);
 
-% Pr(N, :) = double(abs(Xt(1, :)) <= abs(Xt(2, :)) & ...
-%                   abs(Xt(3, :)) <= 0.05 & ...
-%                   abs(Xt(4, :)) <= 0.05);
-Pr(N, :) = prod(double(Xt(2:3:end, :) >= 0.8 - eps & ...
-                  Xt(1:3:end, :) >= target_set_x(1:2:end) - eps & ...
-                  Xt(1:3:end, :) <= target_set_x(2:2:end) - eps),1);
+Pr(N, :) = prod(double(Xt(2:3:end, :) >= 0.8 & ...
+                  Xt(1:3:end, :) >= target_set_x(1:2:end) & ...
+                  Xt(1:3:end, :) <= target_set_x(2:2:end)),1);
 
 for k = N-1:-1:1
-  % Pr(k, :) = Pr(N, :).*(Vk(k, :)*Beta);
-  % Pr(k, :) = Pr(k+1, :).*(Vk(k, :)*Beta);
-  Pr(k, :) = prod(double(Xt(2:3:end, :) >= 0.8 - eps& ...
-                  Xt(1:3:end, :) >= target_set_x(1:2:end) - eps & ...
-                  Xt(1:3:end, :) <= target_set_x(2:2:end) - eps),1)+ ...
-               prod(double(Xt(2:3:end, :) >= 0 - eps & ...
-                  Xt(1:3:end, :) >= safe_set_x(1:2:end) - eps & ...
-                  Xt(1:3:end, :) <= safe_set_x(2:2:end) - eps),1).*(Vk(k+1, :)*Beta);
-  % X1 <= X2 & X1 > 0.1
-  % -0.1 > X2 > 0
-  % X3 <= 0.5 & X3 > 0.01 ok
-  % X4 <= 0.5 & X4 > 0.01 ok
+
+  Pr(k, :) = prod(double(Xt(2:3:end, :) >= 0.8 & ...
+                  Xt(1:3:end, :) >= target_set_x(1:2:end)& ...
+                  Xt(1:3:end, :) <= target_set_x(2:2:end)),1)+ ...
+               prod(double(Xt(2:3:end, :) >= 0& ...
+                  Xt(1:3:end, :) >= safe_set_x(1:2:end)& ...
+                  Xt(1:3:end, :) <= safe_set_x(2:2:end)& ...
+                  Xt(2:3:end, :) < 0.8 & ...
+                  Xt(1:3:end, :) < target_set_x(1:2:end)& ...
+                  Xt(1:3:end, :) > target_set_x(2:2:end)),1).*(Vk(k+1, :)*Beta);
+
 end
 
 
@@ -193,8 +188,8 @@ for k = N:-1:1
     else
         set(gca,'ytick',[])
     end
-  caxis([0 1]);
-  axis([0 1 0.2 1.4]);
+%   caxis([0 1]);
+  axis([-15 15 0 30]);
   colorbar
   view([0, 90]);
   set(gca, 'FontSize', 26);

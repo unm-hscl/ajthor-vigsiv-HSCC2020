@@ -34,7 +34,7 @@ Umax = params.Umax;
 % Each element in this vector is the number of samples along each
 % dimension. So the first element corresponds to X, the second dX, etc.
 % Total number of samples is the product of this vector.
-el = [25, 25, 10];
+el = [20, 50, 20];
 fprintf('Number of elements: %d\n', prod(el));
 
 X = linspace(Xmin, Xmax, el(1));
@@ -58,7 +58,7 @@ Us = U;
 % Covariance matrix. 
 % Each element along the diagonal is the disturbance of a particular
 % variable. I arbitrarily set the disturbance on X/Y/T to 1E-3.
-S = 100*[ 1E-3, 1E-3, 1E-3];
+S = 10*[ 1E-3, 1E-3, 1E-3];
 S = repmat(S, 1, n_copters);
 
 Sigma = sparse(1:n_copters*3, 1:n_copters*3, S);
