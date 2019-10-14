@@ -23,10 +23,16 @@ n_copters = params.n_copters;
 N = params.N;
 Xmin = params.Xmin;
 Xmax = params.Xmax;
+dXmin = params.dXmin;
+dXmax = params.dXmax;
 Ymin = params.Ymin;
 Ymax = params.Ymax;
+dYmin = params.dYmin;
+dYmax = params.dYmax;
 Tmin = params.Tmin;
 Tmax = params.Tmax;
+dTmin = params.dTmin;
+dTmax = params.dTmax;
 
 Umin = params.Umin;
 Umax = params.Umax;
@@ -34,34 +40,40 @@ Umax = params.Umax;
 % Each element in this vector is the number of samples along each
 % dimension. So the first element corresponds to X, the second dX, etc.
 % Total number of samples is the product of this vector.
-el = [20, 50, 20];
+el = [7, 3, 10, 3, 5, 3];
 fprintf('Number of elements: %d\n', prod(el));
 
 X = linspace(Xmin, Xmax, el(1));
-Y = linspace(Ymin, Ymax, el(2));
-T = linspace(Tmin, Tmax, el(3));
+dX = linspace(dXmin, dXmax, el(2));
+Y = linspace(Ymin, Ymax, el(3));
+dY = linspace(dYmin, dYmax, el(4));
+T = linspace(Tmin, Tmax, el(5));
+dT = linspace(dTmin, dTmax, el(6));
 
-[TT, YY, XX] = ndgrid(T, Y, X);
+[dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
 
 X = reshape(XX, 1, []);
+dX = reshape(dXdX, 1, []);
 Y = reshape(YY, 1, []);
+dY = reshape(dYdY, 1, []);
 T = reshape(TT, 1, []);
+dT = reshape(dTdT, 1, []);
 
 % Generate input samples.
 U = [5; 5];
 
 %% Generate sample vectors.
 % Subscript 's' means sample vector.
-Xs = [X; Y; T;];
+Xs = [X; dX; Y; dY; T; dT];
 Us = U;
 
 % Covariance matrix. 
 % Each element along the diagonal is the disturbance of a particular
 % variable. I arbitrarily set the disturbance on X/Y/T to 1E-3.
-S = 10*[ 1E-3, 1E-3, 1E-3];
+S = [ 1E-3, 5E-8, 1E-3, 5E-8, 1E-3, 5E-8];
 S = repmat(S, 1, n_copters);
 
-Sigma = sparse(1:n_copters*3, 1:n_copters*3, S);
+Sigma = sparse(1:n_copters*6, 1:n_copters*6, S);
 
 % if plot_on
 %     % Show the nonzero elements of the covariance matrix.
@@ -75,16 +87,54 @@ Xs = repmat(Xs, n_copters, 1);
 Us = repmat(Us, n_copters, 1);
 
 % Shift the X values for all copters.
-for k = 4:3:n_copters*3
-    Xs(k, :) = Xs(k-3, :) + Xmax;
+for k = 7:6:n_copters*6
+    Xs(k, :) = Xs(k-6, :) + Xmax;
 end
 
 %% Generate system matrices.
 
 m = 5; 
 r = 2;
-I = 2;
+L = 2;
 Ts = 0.25;
+
+A = [0 1 0 0   0 0;
+     0 0 0 0   0 0;
+     0 0 0 1   0 0;
+     0 0 0 0   0 0;
+     0 0 0 0   0 1;
+     0 0 0 0   0 0;];
+ 
+B = [0     0;
+     0     0;
+     0     0;
+     1/m 1/m;
+     0     0;
+     r/L -r/L;];
+ 
+sys = ss(A,B,eye(1,size(A,2)),0);
+
+sysd = c2d(sys,Ts);
+
+A = sysd.A;
+B = sysd.B;
+         
+A = kron(speye(n_copters),A);
+
+
+% if plot_on
+%     % Show the nonzero elements of the A matrix.
+%     figure
+%     spy(A);
+% end
+
+B = kron(speye(n_copters),B);
+
+% if plot_on
+%     % Show the nonzero elements of the B matrix.
+%     figure
+%     spy(B);
+% end
 
 %% Generate output samples.
 
@@ -92,17 +142,11 @@ for i = 1:N
     
     if i == 1
 
-        Ys(1,:) = -Ts*m*sin(Xs(3,:))*(U(1)+U(2)) + Xs(1,:) + Sigma(1,1)*randn(1, prod(el));
-        Ys(2,:) = Ts*m*cos(Xs(3,:))*(U(1)+U(2)) + Xs(2,:) + Sigma(2,2)*randn(1, prod(el));
-        Ys(3,:) = Ts*r/I*(U(1)-U(2)) + Xs(3,:) + Sigma(3,3)*randn(1, prod(el));
-        
-        
+        Ys = A*Xs + B*Us + Sigma*randn(6*n_copters, prod(el));
         
     else
         Xs = Ys;
-        Ys(1,:) = -Ts*m*sin(Xs(3,:))*(U(1)+U(2)) + Xs(1,:)+ Sigma(1,1)*randn(1, prod(el));
-        Ys(2,:) = Ts*m*cos(Xs(3,:))*(U(1)+U(2)) + Xs(2,:)+ Sigma(2,2)*randn(1, prod(el));
-        Ys(3,:) = Ts*r/I*(U(1)-U(2)) + Xs(3,:)+ Sigma(3,3)*randn(1, prod(el));
+        Ys = A*Xs + B*Us + Sigma*randn(6*n_copters, prod(el));
         
     end
     
