@@ -15,21 +15,21 @@ clc, clear, close all
 q = 1;
 params.n_copters = 1;
 params.N = 1;
-params.Xmin = 0;
-params.Xmax = 1;
+params.Xmin = -2.5;
+params.Xmax = 2.5;
 params.dXmin = 0;
-params.dXmax = 1;
-params.Ymin = 0;
+params.dXmax = 0.1;
+params.Ymin = -0.1;
 params.Ymax = 1;
 params.dYmin = 0;
-params.dYmax = 1;
-params.Tmin = 0;
+params.dYmax = 0.1;
+params.Tmin = -1;
 params.Tmax = 1;
 params.dTmin = 0;
-params.dTmax = 1;
+params.dTmax = 0.1;
 
-params.Umin = 2;
-params.Umax = 2;
+params.Umin = 5;
+params.Umax = 5;
 
 [Ys,Xs] = generate_samples_quad(q,params);
 
@@ -51,7 +51,7 @@ for k = 1:(params.n_copters-1)
     
 end
 
-safe_set_x = [-4 4]';
+safe_set_x = [-2 2]';
 
 for k = 1:(params.n_copters-1)
     
@@ -140,12 +140,10 @@ for k = N-1:-1:1
   Pr(k, :) = prod(double(Xt(3:6:end, :) >= 0.8& ...
                   Xt(1:6:end, :) >= target_set_x(1:2:end)& ...
                   Xt(1:6:end, :) <= target_set_x(2:2:end)),1) + ...
-               prod(double(Xt(3:6:end, :) >= 0.2 & ...
+               prod(double(Xt(3:6:end, :) >= 0 & ...
                   Xt(1:6:end, :) >= safe_set_x(1:2:end)& ...
                   Xt(1:6:end, :) <= safe_set_x(2:2:end)& ...
-                  Xt(3:6:end, :) < 0.8  & ...
-                  Xt(1:6:end, :) < target_set_x(1:2:end) & ...
-                  Xt(1:6:end, :) > target_set_x(2:2:end)),1).*(Vk(k+1, :)*Beta);
+                  Xt(3:6:end, :) < 0.8),1).*(Vk(k+1, :)*Beta);
 
 end
 

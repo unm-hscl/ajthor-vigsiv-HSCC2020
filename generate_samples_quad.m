@@ -40,7 +40,7 @@ Umax = params.Umax;
 % Each element in this vector is the number of samples along each
 % dimension. So the first element corresponds to X, the second dX, etc.
 % Total number of samples is the product of this vector.
-el = [7, 3, 10, 3, 5, 3];
+el = [10, 3, 10, 3, 3, 3];
 fprintf('Number of elements: %d\n', prod(el));
 
 X = linspace(Xmin, Xmax, el(1));
@@ -70,7 +70,7 @@ Us = U;
 % Covariance matrix. 
 % Each element along the diagonal is the disturbance of a particular
 % variable. I arbitrarily set the disturbance on X/Y/T to 1E-3.
-S = [ 1E-3, 5E-8, 1E-3, 5E-8, 1E-3, 5E-8];
+S = [ 1E-3, 5E-8, 1E-3, 5E-8, 1E-5, 5E-8];
 S = repmat(S, 1, n_copters);
 
 Sigma = sparse(1:n_copters*6, 1:n_copters*6, S);
@@ -95,7 +95,8 @@ end
 
 m = 5; 
 r = 2;
-L = 2;
+I = 2;
+g = 9.81;
 Ts = 0.25;
 
 A = [0 1 0 0   0 0;
@@ -110,7 +111,7 @@ B = [0     0;
      0     0;
      1/m 1/m;
      0     0;
-     r/L -r/L;];
+     r/I -r/I;];
  
 sys = ss(A,B,eye(1,size(A,2)),0);
 
@@ -142,7 +143,14 @@ for i = 1:N
     
     if i == 1
 
-        Ys = A*Xs + B*Us + Sigma*randn(6*n_copters, prod(el));
+        Ys(1,:) = Xs(1,:) + Ts*Xs(2,:) + S(1)*randn(1, prod(el));
+        Ys(2,:) = -Ts/m*sin(Xs(3,:))*(U(1)+U(2)) + Xs(2,:) + S(2)*randn(1, prod(el));
+        Ys(3,:) = Xs(3,:) + Ts*Xs(4,:)+ S(3)*randn(1, prod(el));
+        Ys(4,:) = Ts/m*cos(Xs(3,:))*(U(1)+U(2)) - Ts/g + Xs(4,:) + S(4)*randn(1, prod(el));
+        Ys(5,:) = Xs(5,:) + Ts*Xs(6,:)+ S(5)*randn(1, prod(el));
+        Ys(6,:) = Ts*r/I*(U(1)-U(2)) + Xs(6,:) + S(6)*randn(1, prod(el));
+        
+        
         
     else
         Xs = Ys;

@@ -1,7 +1,7 @@
 
 N = 5;
-K = srt.Tube(N, Polyhedron('lb', [-10; 0; -5], 'ub', [10; 1000; 5]));
-T = srt.Tube(N, Polyhedron('lb', [-5; 0.8; -2], 'ub', [10; 1000; 2]));
+K = srt.Tube(N, Polyhedron('lb', [-10; 0; -5; -100;-100;-100], 'ub', [10; 1000; 5;100;100;100]));
+T = srt.Tube(N, Polyhedron('lb', [-5; 0.8; -2; -100;-100;-100], 'ub', [10; 1000; 2;100;100;100]));
 
 prb = srt.problems.FirstHitting('ConstraintTube', K, 'TargetTube', T);
 
@@ -11,51 +11,87 @@ Ymin = -10;
 Ymax = 10;
 Tmin = -1; 
 Tmax = 1;
+dXmin = 0;
+dXmax = 1;
+dYmin = 0;
+dYmax = 1;
+dTmin = 0;
+dTmax = 1;
 
-el = [25, 25, 10];
+el = [7, 3, 10, 3, 5, 3];
 fprintf('Number of elements: %d\n', prod(el));
 
 X = linspace(Xmin, Xmax, el(1));
-Y = linspace(Ymin, Ymax, el(2));
-T = linspace(Tmin, Tmax, el(3));
+dX = linspace(dXmin, dXmax, el(2));
+Y = linspace(Ymin, Ymax, el(3));
+dY = linspace(dYmin, dYmax, el(4));
+T = linspace(Tmin, Tmax, el(5));
+dT = linspace(dTmin, dTmax, el(6));
 
-[TT, YY, XX] = ndgrid(T, Y, X);
+[dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
 
 X = reshape(XX, 1, []);
+dX = reshape(dXdX, 1, []);
 Y = reshape(YY, 1, []);
+dY = reshape(dYdY, 1, []);
 T = reshape(TT, 1, []);
-
-X = [X;Y;T];
+dT = reshape(dTdT, 1, []);
 
 % Generate input samples.
 U = [5; 5];
 
-S = 100*[ 1E-3, 1E-3, 1E-3];
+%% Generate sample vectors.
+% Subscript 's' means sample vector.
+X = [X; dX; Y; dY; T; dT];
+
+% Covariance matrix. 
+% Each element along the diagonal is the disturbance of a particular
+% variable. I arbitrarily set the disturbance on X/Y/T to 1E-3.
+S = [ 1E-3, 5E-8, 1E-3, 5E-8, 1E-3, 5E-8];
 
 m = 5; 
 r = 2;
 I = 2;
 Ts = 0.25;
 
-Y(1,:) = -Ts*m*sin(X(3,:))*(U(1)+U(2)) + X(1,:) + S(1)*randn(1, prod(el));
-Y(2,:) = Ts*m*cos(X(3,:))*(U(1)+U(2)) + X(2,:) + S(2)*randn(1, prod(el));
-Y(3,:) = Ts*r/I*(U(1)-U(2)) + X(3,:) + S(3)*randn(1, prod(el));
+
+
+Y(1,:) = X(1,:) + Ts*X(4,:)+ S(1)*randn(1, prod(el));
+Y(2,:) = X(2,:) + Ts*X(5,:)+ S(2)*randn(1, prod(el));
+Y(3,:) = X(3,:) + Ts*X(6,:)+ S(3)*randn(1, prod(el));
+Y(4,:) = -Ts*m*sin(X(3,:))*(U(1)+U(2)) + X(4,:) + S(4)*randn(1, prod(el));
+Y(5,:) = Ts*m*cos(X(3,:))*(U(1)+U(2)) + X(5,:) + S(5)*randn(1, prod(el));
+Y(6,:) = Ts*r/I*(U(1)-U(2)) + X(6,:) + S(6)*randn(1, prod(el));
 
 sys = srt.systems.SampledSystem('X', X, 'U', U, 'Y', Y);
 
 alg = srt.algorithms.KernelEmbeddings('sigma', 0.1, 'lambda', 1);
 
-X = linspace(Xmin, Xmax, el(1));
-Y = linspace(Ymin, Ymax, el(2));
-T = linspace(Tmin, Tmax, el(3));
+el = [7, 3, 10, 3, 5, 3];
+fprintf('Number of elements: %d\n', prod(el));
 
-[TT, YY, XX] = ndgrid(T, Y, X);
+X = linspace(Xmin, Xmax, el(1));
+dX = linspace(dXmin, dXmax, el(2));
+Y = linspace(Ymin, Ymax, el(3));
+dY = linspace(dYmin, dYmax, el(4));
+T = linspace(Tmin, Tmax, el(5));
+dT = linspace(dTmin, dTmax, el(6));
+
+[dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
 
 X = reshape(XX, 1, []);
+dX = reshape(dXdX, 1, []);
 Y = reshape(YY, 1, []);
+dY = reshape(dYdY, 1, []);
 T = reshape(TT, 1, []);
+dT = reshape(dTdT, 1, []);
 
-X = [X;Y;T];
+% Generate input samples.
+U = [5; 5];
+
+%% Generate sample vectors.
+% Subscript 's' means sample vector.
+X = [X; dX; Y; dY; T; dT];
 
 U = [5;5;];
 
