@@ -1,0 +1,246 @@
+\documentclass[11pt]{article}
+\usepackage[letterpaper, margin=1in]{geometry}
+
+\usepackage[space]{cite}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{xspace}
+\usepackage{xparse}
+
+\let\labelindent\relax
+\usepackage{enumitem}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\usepackage{epstopdf}
+\epstopdfsetup{update}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage[colorlinks]{hyperref}
+\usepackage[symbols,nogroupskip,sort=use]{glossaries-extra}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{mystyle}{
+    % backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    % keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4
+}
+
+\lstset{style=mystyle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\makenoidxglossaries
+
+\glsxtrnewsymbol[description={Sample Set}]{S}{%
+  \ensuremath{\mathcal{S}}
+}
+
+\glsxtrnewsymbol[description={Markov Control Process}]{H}{%
+  \ensuremath{\mathcal{H}}
+}
+\glsxtrnewsymbol[description={State Space}]{X}{%
+  \ensuremath{\mathcal{X} \subseteq \Re^{n}}
+}
+\glsxtrnewsymbol[description={Control Space}]{U}{%
+  \ensuremath{\mathcal{U} \subseteq \Re^{m}}
+}
+\glsxtrnewsymbol[description={Stochastic Kernel}]{Q}{%
+  \ensuremath{Q}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{%
+  Documentation for
+  ``Stochastic Reachability for Systems up to a Million Dimensions''
+}
+\author{Adam J. Thorpe, Vignesh Sivaramakrishnan, Meeko M. K. Oishi}
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Documentation for the algorithms presented in ``Stochastic Reachability for Systems up to a Million Dimensions'' by Adam J. Thorpe, Vignesh Sivaramakrishnan, Meeko M. K. Oishi.
+
+\tableofcontents
+
+\printnoidxglossary[type=symbols,style=long,title={List of Symbols}]
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Start Here}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Instructions}
+
+\subsection{Running The Code}
+
+\subsection{Generating the Figures}
+
+\subsection{Modifying the Code}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Algorithms}
+
+The algorithms presented
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Preliminaries}
+
+We consider a a Markov control process $\gls{H}$, which is defined in \cite{summers} as a 3-tuple:
+\begin{align}
+  \mathcal{H} = (\mathcal{X}, \mathcal{U}, Q)
+\end{align}
+where $\gls{X}$ is the state space, $\gls{U}$ is the control space, and $\gls{Q}$ is a stochastic kernel
+$Q : \mathscr{B}(\mathcal{X}) \times \mathcal{X} \times \mathcal{U} \rightarrow [0, 1]$, which is a Borel-measurable function that maps a probability measure $Q(\cdot \,|\, x, u)$ to each $x \in \mathcal{X}$ and $u \in \mathcal{U}$ in the Borel space $(\mathcal{X}, \mathscr{B}(\mathcal{X}))$.
+A Markov control process can describe a wide class of stochastic, time-invariant systems, that can have either linear or nonlinear dynamics, as well as non-Gaussian disturbances.
+%
+We consider a set $\gls{S}$ of $M$ samples of the form
+$\lbrace (\bar{x}_{i}, \bar{u}_{i}, \bar{y}_{i}) \rbrace_{i=1}^{M}$ taken from the stochastic kernel,
+such that $\bar{y}_{i}$ is drawn i.i.d. from the stochastic kernel $Q$,
+and $\bar{u}_{i}$ is drawn from a fixed Markov policy $\pi$.
+\begin{align}
+	\bar{y}_{i} &\sim Q(\,\cdot\,|\,\bar{x}_{i}, \bar{u}_{i}) \\
+	\bar{u}_{i} &= \pi(\bar{x}_{i})
+\end{align}
+The samples can be generated experimentally or via simulation, meaning they can be taken from real observations of the system evolution, or they can be generated using a known model. For demonstration purposes, all examples use samples collected via simulation.
+%
+Once the samples are generated, the algorithm assumes no knowledge of the stochastic kernel $Q$ or the disturbance.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Kernel Distribution Embeddings Backward Recursion Algorithm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Kernel Distribution Embeddings Backward Recursion (RFF) Algorithm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Problems}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Terminal-Hitting Time Problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{First-Hitting Time Problem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Systems}
+
+The algorithms accept sample data drawn from a stochastic kernel $\gls{Q}$. The data should be formatted such that the realizations of the stochastic kernel are formatted into the columns of a sample vector
+\begin{align}
+  \bar{x} = [\bar{x}_{1}, \ldots, \bar{x}_{M}] \\
+  \bar{u} = [\bar{u}_{1}, \ldots, \bar{u}_{M}] \\
+  \bar{y} = [\bar{y}_{1}, \ldots, \bar{y}_{M}]
+\end{align}
+where the number of columns is $M$, and the number of rows is the dimensionality of the samples. For example, if $\bar{x}_{i}, \bar{y}_{i} \in \Re^{n}$, $\bar{x}$ and $\bar{y}$ should be $[n \times M]$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{System Samples}
+
+The system input to the algorithms is a set of samples organized in a class called \verb|SystemSamples|.
+For example, to generate samples for the discrete-time double integrator system
+with sampling time $T = 0.25$,
+\begin{align}
+  \boldsymbol{x}_{k+1} =
+  \begin{bmatrix}
+    1 & T \\
+    0 & 1
+  \end{bmatrix}
+  \boldsymbol{x}_{k} +
+  \begin{bmatrix}
+    \frac{T^{2}}{2!} \\
+    T
+  \end{bmatrix}
+  u_{k} +
+  \boldsymbol{w}_{k}
+\end{align}
+
+\begin{lstlisting}[language=Matlab]
+  % Dimensionality of the state space samples.
+  n = 2;
+  % Dimensionality of the input space samples.
+  m = 2;
+  % Sampling time.
+  T = 0.25;
+
+  % Number of samples.
+  M = 1000;
+
+  % Compute random initial states sampled from a zero-mean Gaussian.
+  X = randn(n, M);
+  % Compute the input samples. For this example, the input is chosen to be 0.
+  U = zeros(m, M);
+  % Compute the disturbance.
+  W = randn(n, M);
+
+  % Construct the state and input matrices.
+  A = [1 T; 0 1];
+  B = [(T^2)/2!; T];
+
+  % compute the output samples.
+  Y = A*X + B*U + W;
+
+  % Create a SystemSamples object.
+  samples = SystemSamples('X', X, 'U', U, 'Y', Y);
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
