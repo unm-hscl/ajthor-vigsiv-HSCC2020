@@ -8,6 +8,7 @@
 \usepackage{mathrsfs}
 \usepackage{xspace}
 \usepackage{xparse}
+\usepackage[dvipsnames*, svgnames]{xcolor}
 
 \let\labelindent\relax
 \usepackage{enumitem}
@@ -26,23 +27,18 @@
 \epstopdfsetup{update}
 
 \usepackage{listings}
-\usepackage{xcolor}
 
 \usepackage[colorlinks]{hyperref}
-\usepackage[symbols,nogroupskip,sort=use]{glossaries-extra}
+\usepackage[symbols, nogroupskip, sort=use]{glossaries-extra}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-
 \lstdefinestyle{mystyle}{
-    % backgroundcolor=\color{backcolour},
-    commentstyle=\color{codegreen},
-    % keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
+    backgroundcolor=\color{GhostWhite},
+    commentstyle=\color{Green},
+    keywordstyle=\color{Crimson},
+    numberstyle=\tiny\color{Gray},
+    stringstyle=\color{DarkViolet},
     basicstyle=\ttfamily\footnotesize,
     breakatwhitespace=false,
     breaklines=true,
@@ -65,18 +61,51 @@
 \glsxtrnewsymbol[description={Sample Set}]{S}{%
   \ensuremath{\mathcal{S}}
 }
+\glsxtrnewsymbol[description={State Samples}]{xbar}{%
+  \ensuremath{\bar{x}_{i}}
+}
+\glsxtrnewsymbol[description={Input Samples}]{ubar}{%
+  \ensuremath{\bar{u}_{i}}
+}
+\glsxtrnewsymbol[description={Output Samples}]{ybar}{%
+  \ensuremath{\bar{y}_{i}}
+}
+\glsxtrnewsymbol[description={Number of Samples}]{M}{%
+  \ensuremath{M}
+}
 
 \glsxtrnewsymbol[description={Markov Control Process}]{H}{%
   \ensuremath{\mathcal{H}}
 }
 \glsxtrnewsymbol[description={State Space}]{X}{%
-  \ensuremath{\mathcal{X} \subseteq \Re^{n}}
+  \ensuremath{\mathcal{X}}
 }
 \glsxtrnewsymbol[description={Control Space}]{U}{%
-  \ensuremath{\mathcal{U} \subseteq \Re^{m}}
+  \ensuremath{\mathcal{U}}
 }
 \glsxtrnewsymbol[description={Stochastic Kernel}]{Q}{%
   \ensuremath{Q}
+}
+\glsxtrnewsymbol[description={Conditional probability measure}]{condpr}{%
+  \ensuremath{Q(\cdot \,|\, x, u)}
+}
+
+\glsxtrnewsymbol[description={Borel $\sigma$-algebra associated with $\mathcal{X}$}]{BorelX}{%
+  \ensuremath{\mathscr{B}(\mathcal{X})}
+}
+
+\glsxtrnewsymbol[description={Control Policy}]{policy}{%
+  \ensuremath{\pi}
+}
+
+\glsxtrnewsymbol[description={Target Set}]{T}{%
+  \ensuremath{\mathcal{T}}
+}
+\glsxtrnewsymbol[description={Safe Set}]{K}{%
+  \ensuremath{\mathcal{K}}
+}
+\glsxtrnewsymbol[description={Time Horizon}]{N}{%
+  \ensuremath{N}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,6 +129,8 @@ Documentation for the algorithms presented in ``Stochastic Reachability for Syst
 
 \tableofcontents
 
+\newpage
+
 \printnoidxglossary[type=symbols,style=long,title={List of Symbols}]
 
 \newpage
@@ -108,90 +139,72 @@ Documentation for the algorithms presented in ``Stochastic Reachability for Syst
 
 \section{Start Here}
 
+The algorithms presented in \cite{thorpe} are designed to use \emph{kernel distribution embeddings} \cite{grunewalder} to solve the terminal-hitting time and first-hitting time stochastic reachability problems defined in \cite{abate, summers}.
+%
+Instructions for running the code are outlined in \ref{section: instructions}. This section also includes instructions for modifying the code for your own system.
+A description of the algorithms is presented in \ref{section: algorithms}.
+The problem definitions are documented in section \ref{section: problems}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Instructions}
+\label{section: instructions}
 
 \subsection{Running The Code}
 
 \subsection{Generating the Figures}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{Modifying the Code}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Algorithms}
-
-The algorithms presented
+Using a different system for the algorithms is relatively simple. Simply substitute samples generated from your system in the examples to perform stochastic reachability calculations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Preliminaries}
+\section{Samples}
+\label{section: samples}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Mathematical Preliminaries}
 
 We consider a a Markov control process $\gls{H}$, which is defined in \cite{summers} as a 3-tuple:
 \begin{align}
-  \mathcal{H} = (\mathcal{X}, \mathcal{U}, Q)
+  \gls{H} = (\gls{X}, \gls{U}, \gls{Q})
 \end{align}
-where $\gls{X}$ is the state space, $\gls{U}$ is the control space, and $\gls{Q}$ is a stochastic kernel
-$Q : \mathscr{B}(\mathcal{X}) \times \mathcal{X} \times \mathcal{U} \rightarrow [0, 1]$, which is a Borel-measurable function that maps a probability measure $Q(\cdot \,|\, x, u)$ to each $x \in \mathcal{X}$ and $u \in \mathcal{U}$ in the Borel space $(\mathcal{X}, \mathscr{B}(\mathcal{X}))$.
+where $\gls{X} \subseteq \Re^{n}$ is the state space of the system, $\gls{U} \subseteq \Re^{m}$ is the control space, and $\gls{Q}$ is a stochastic kernel
+$Q : \gls{BorelX} \times \gls{X} \times \gls{U} \rightarrow [0, 1]$, which is a Borel-measurable function that maps a probability measure $\gls{condpr}$ to each $x \in \gls{X}$ and $u \in \gls{U}$ in the Borel space $(\gls{X}, \gls{BorelX})$.
 A Markov control process can describe a wide class of stochastic, time-invariant systems, that can have either linear or nonlinear dynamics, as well as non-Gaussian disturbances.
 %
-We consider a set $\gls{S}$ of $M$ samples of the form
-$\lbrace (\bar{x}_{i}, \bar{u}_{i}, \bar{y}_{i}) \rbrace_{i=1}^{M}$ taken from the stochastic kernel,
-such that $\bar{y}_{i}$ is drawn i.i.d. from the stochastic kernel $Q$,
-and $\bar{u}_{i}$ is drawn from a fixed Markov policy $\pi$.
+We consider a set $\gls{S}$ of $\gls{M}$ samples of the form
+$\lbrace (\gls{xbar}, \gls{ubar}, \gls{ybar}) \rbrace_{i=1}^{\gls{M}}$ taken from the stochastic kernel,
+such that $\gls{ybar}$ is drawn i.i.d. from the stochastic kernel $\gls{Q}$,
+and $\gls{ubar}$ is drawn from a fixed Markov policy $\gls{policy}$.
 \begin{align}
-	\bar{y}_{i} &\sim Q(\,\cdot\,|\,\bar{x}_{i}, \bar{u}_{i}) \\
-	\bar{u}_{i} &= \pi(\bar{x}_{i})
+	\gls{ybar} &\sim \gls{condpr} \\
+	\gls{ubar} &= \gls{policy}(\gls{xbar})
 \end{align}
 The samples can be generated experimentally or via simulation, meaning they can be taken from real observations of the system evolution, or they can be generated using a known model. For demonstration purposes, all examples use samples collected via simulation.
 %
-Once the samples are generated, the algorithm assumes no knowledge of the stochastic kernel $Q$ or the disturbance.
+Once the samples are generated, the algorithm assumes no knowledge of the stochastic kernel $\gls{Q}$ or the disturbance.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Kernel Distribution Embeddings Backward Recursion Algorithm}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Kernel Distribution Embeddings Backward Recursion (RFF) Algorithm}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Problems}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Terminal-Hitting Time Problem}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{First-Hitting Time Problem}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Systems}
-
-The algorithms accept sample data drawn from a stochastic kernel $\gls{Q}$. The data should be formatted such that the realizations of the stochastic kernel are formatted into the columns of a sample vector
+The algorithms accept sample data drawn from a stochastic kernel $\gls{Q}$. The data should be formatted such that the realizations of the stochastic kernel are formatted into the columns of a sample vector:
 \begin{align}
   \bar{x} = [\bar{x}_{1}, \ldots, \bar{x}_{M}] \\
   \bar{u} = [\bar{u}_{1}, \ldots, \bar{u}_{M}] \\
   \bar{y} = [\bar{y}_{1}, \ldots, \bar{y}_{M}]
 \end{align}
-where the number of columns is $M$, and the number of rows is the dimensionality of the samples. For example, if $\bar{x}_{i}, \bar{y}_{i} \in \Re^{n}$, $\bar{x}$ and $\bar{y}$ should be $[n \times M]$.
+where the number of columns is $\gls{M}$, and the number of rows is the dimensionality of the samples. For example, if $\gls{xbar}, \gls{ybar} \in \Re^{n}$, $\bar{x}$ and $\bar{y}$ should be $[n \times \gls{M}]$, and if $\gls{ubar} \in \Re^{m}$, $\bar{u}$ should be $[m \times \gls{M}]$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{System Samples}
 
-The system input to the algorithms is a set of samples organized in a class called \verb|SystemSamples|.
+The system definition for the algorithms is a set of samples organized in a class called \verb|SystemSamples|.
 For example, to generate samples for the discrete-time double integrator system
-with sampling time $T = 0.25$,
+with sampling time~$T$,
 \begin{align}
   \boldsymbol{x}_{k+1} =
   \begin{bmatrix}
@@ -206,7 +219,7 @@ with sampling time $T = 0.25$,
   u_{k} +
   \boldsymbol{w}_{k}
 \end{align}
-
+we begin by defining the constant values for the system dimensionality, the sampling time of the system, and the system matrices. In the case of the stochastic double integrator, the system dimensionality is $n = 2$, and the input space dimensionality is $m = 1$. We choose the sampling time to be $T = 0.25$.
 \begin{lstlisting}[language=Matlab]
   % Dimensionality of the state space samples.
   n = 2;
@@ -215,6 +228,12 @@ with sampling time $T = 0.25$,
   % Sampling time.
   T = 0.25;
 
+  % Construct the state and input matrices.
+  A = [1 T; 0 1];
+  B = [(T^2)/2!; T];
+\end{lstlisting}
+Then, we can generate a set of samples, $\gls{S}$, using the known dynamics of the system. For this example, we choose $\gls{M} = 1000$ samples to be generated randomly from a Gaussian distribution $x_{0} \sim \mathcal{N}(0, 1)$.
+\begin{lstlisting}[language=Matlab, firstnumber=last]
   % Number of samples.
   M = 1000;
 
@@ -225,16 +244,149 @@ with sampling time $T = 0.25$,
   % Compute the disturbance.
   W = randn(n, M);
 
-  % Construct the state and input matrices.
-  A = [1 T; 0 1];
-  B = [(T^2)/2!; T];
-
   % compute the output samples.
   Y = A*X + B*U + W;
-
-  % Create a SystemSamples object.
-  samples = SystemSamples('X', X, 'U', U, 'Y', Y);
 \end{lstlisting}
+Once we have generated our samples, they can be stored using the \verb|SystemSamples| class. The class accepts the system dimensionality, specified as a vector \verb|[n, m]|, and name/value pairs corresponding to $\bar{x}$, $\bar{u}$, and $\bar{y}$, and can be used like so:
+\begin{lstlisting}[language=Matlab, firstnumber=last]
+  % Create a SystemSamples object.
+  samples = SystemSamples([n, m], 'X', X, 'U', U, 'Y', Y);
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Problems}
+\label{section: problems}
+
+We consider two problems defined in \cite{summers}:
+\begin{enumerate}
+  \item The \textbf{terminal-hitting time problem} (\ref{section: terminal-hitting time problem}), which is the probability that a system will remain safe over a time horizon and reach a target set at the final time.
+  \item The \textbf{first-hitting time problem} (\ref{section: first-hitting time problem}), which is the probability that a system will reach a target set at some time in the time horizon, and remain safe until it reaches the target set.
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Mathematical Preliminaries}
+
+Let $\gls{T}, \gls{K} \in \gls{X}$ denote the \emph{target set} and \emph{safe set}, respectively.
+%
+We denote the time horizon of the problem as $k \in [0, \gls{N}]$, where $\gls{N} \in \mathbb{N}$ is the final time of the system, and $k \in \mathbb{N}$ is the time index.
+
+The algorithms scale well with increased time horizons, ...
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Terminal-Hitting Time Problem}
+\label{section: terminal-hitting time problem}
+
+The terminal-hitting time problem is defined in \cite{summers} as the probability that a system $\gls{H}$ will reach a target set $\gls{T}$ at some time $\gls{N}$ while avoiding the \emph{unsafe set} $\gls{X}\backslash\gls{K}$ for $k \in [0, \gls{N}-1]$.
+
+As an example, we consider a stochastic double integrator.
+We can construct the safe set and target set by specifying the sets as functions which check whether a sample is contained within the set.
+\begin{lstlisting}[language=Matlab]
+  % Define the time horizon.
+  N = 5;
+
+  % Define the target set.
+  T = @(x) all(-1 <= x & x <= 1);
+
+  % Define the safe set.
+  K = @(x) all(-1 <= x & x <= 1);
+\end{lstlisting}
+Then, we can construct the terminal-hitting time problem using \verb|TerminalHittingTimeProblem|.
+\begin{lstlisting}[language=Matlab, firstnumber=last]
+  % Define the terminal-hitting time problem.
+  problem = TerminalHittingTimeProblem(N, T, K);
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{First-Hitting Time Problem}
+\label{section: first-hitting time problem}
+
+The first-hitting time problem is defined in \cite{summers} as the probability that a system $\gls{H}$ will reach a target set $\gls{T}$ at some time $j \in [0, \gls{N}]$ while avoiding the \emph{unsafe set} $\gls{X}\backslash\gls{K}$ for $k \in [0, j-1]$.
+
+As an example, we consider a stochastic double integrator.
+We can construct the safe set and target set by specifying the sets as functions which check whether a sample is contained within the set.
+\begin{lstlisting}[language=Matlab]
+  % Define the time horizon.
+  N = 5;
+
+  % Define the target set.
+  T = @(x) all(-0.5 <= x & x <= 0.5);
+
+  % Define the safe set.
+  K = @(x) all(-1 <= x & x <= 1);
+\end{lstlisting}
+Then, we can construct the first-hitting time problem using \verb|FirstHittingTimeProblem|.
+\begin{lstlisting}[language=Matlab, firstnumber=last]
+  % Define the first-hitting time problem.
+  problem = FirstHittingTimeProblem(N, T, K);
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Algorithms}
+\label{section: algorithms}
+
+The algorithms presented
+
+See section \ref{section: samples} for more information about the required sample format and an example of generating samples via simulation. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Kernel Distribution Embeddings Backward Recursion Algorithm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Kernel Distribution Embeddings Backward Recursion (RFF) Algorithm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Troubleshooting}
+
+In this section, we address some common pitfalls when using the algorithm.
+
+\begin{enumerate}
+  \item
+  \textbf{Choosing incorrect parameter values.} The algorithm parameter values
+  can have a dramatic impact on the quality of the approximation computed via
+  the algorithm. However, the parameter values are less important than in other
+  kernel methods, such as Support Vector Machines \cite{vapnik}. This is handled
+  somewhat by the normalization coefficient $\eta$, that is applied when the
+  algorithm is computed. The default algorithm parameters are: $\sigma = 0.1$
+  and $\lambda = 1$. In practice, these values do not need to be changed, though
+  it is possible to choose slightly better parameters via cross validation. A
+  cross-validation scheme for choosing these parameters is discussed in
+  \cite{michelli}.
+
+  \item
+  \textbf{Choosing a low value of $D$.} For algorithm 2 using random Fourier features, the algorithm requires you to specify a parameter value $D$, which is the dimensionality of the reduced Gram matrix. For low-dimensional systems, this value may result in a higher-dimensional Gram matrix than algorithm 1. Increasing the value of $D$ may help improve the approximation using algorithm 2.
+
+  \item
+  \textbf{Choosing samples strictly within the safe set.} If all samples are
+  strictly within the safe set, the probabilities computed near the boundaries
+  of the safe set might be overly-optimistic. This is because the function
+  approximation generated by the algorithm will not drop sharply to zero outside
+  the safe set, pulling the probabilities computed near the safe set boundary
+  down. Choosing samples over a wider area of the state space, including outside
+  of the safe set, will help alleviate this issue.
+
+  \item
+  \textbf{No output samples $\gls{ybar}$ are within the target set.} If no
+  output samples are within the target set, the backward recursion will
+  initialize itself with a vector of all zeros. Because the safety probabilities
+  are multiplied together at each time step, this can introduce \verb|NaN|
+  values in some of the calculations and will produce undefined results. In
+  practice, a small percentage of the samples, such as 5-10\% must be within the
+  target set for the algorithms to work properly.
+\end{enumerate}
+
+Several safeguards are present in the code which prevent some of these issues
+from arising, but care should still be taken to ensure that they are addressed
+before running the algorithm.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
