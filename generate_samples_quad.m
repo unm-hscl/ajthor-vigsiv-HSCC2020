@@ -51,6 +51,9 @@ dT = reshape(dTdT, 1, []);
 
 %% Generate sample vectors.
 
+XX = [];
+YY = [];
+
 % For the state
 Xs = [X; dX; Y; dY; T; dT];
 
@@ -59,32 +62,22 @@ Xs = [X; dX; Y; dY; T; dT];
 
 for k = 1:size(Xs,2)
     
-   U(:,k) = quadInputGen(N,Ts,ulim,Xs(:,k),X_d);  
-   
-    if any(isnan(u))
-        X = [X, XX(:, k)];
-        Ys(1,:) = Xs(1,:) + Ts*Xs(2,:) + disturb(1);
-        Ys(2,:) = -Ts/m*sin(Xs(3,:))*(U(1)+U(2)) + Xs(2,:) + disturb(2);
-        Ys(3,:) = Xs(3,:) + Ts*Xs(4,:)+ disturb(3);
-        Ys(4,:) = Ts/m*cos(Xs(3,:))*(U(1)+U(2)) - Ts/g + Xs(4,:) + disturb(4);
-        Ys(5,:) = Xs(5,:) + Ts*Xs(6,:) + disturb(5);
-        Ys(6,:) = Ts*r/I*(U(1)-U(2)) + Xs(6,:) + disturb(6);
-        Y = [Y, Ys];
-    else
-      U = reshape(U, 2, []);
-      Ys = Xs(:, k);
-      for q = 1:N
-        % Compute the samples that result from this.
-        X = [X, Ys];
-        Ys(1,:) = Xs(1,:) + Ts*Xs(2,:) + disturb(1);
-        Ys(2,:) = -Ts/m*sin(Xs(3,:))*(U(1)+U(2)) + Xs(2,:) + disturb(2);
-        Ys(3,:) = Xs(3,:) + Ts*Xs(4,:)+ disturb(3);
-        Ys(4,:) = Ts/m*cos(Xs(3,:))*(U(1)+U(2)) - Ts/g + Xs(4,:) + disturb(4);
-        Ys(5,:) = Xs(5,:) + Ts*Xs(6,:) + disturb(5);
-        Ys(6,:) = Ts*r/I*(U(1)-U(2)) + Xs(6,:) + disturb(6);
-        Y = [Y, Ys];
-      end
+    U(:,k) = quadInputGen(N,Ts,ulim,Xs(:,k),X_d);  
+    
+    U = reshape(U, 2, []);
+    Ys = Xs(:, k);
+    for q = 1:N
+    % Compute the samples that result from this.
+    XX = [XX, Ys];
+    Ysu(1,:) = Ys(1,:) + Ts*Ys(2,:) + disturb(1);
+    Ysu(2,:) = -Ts/m*sin(Ys(3,:))*(U(1)+U(2)) + Ys(2,:) + disturb(2);
+    Ysu(3,:) = Ys(3,:) + Ts*Ys(4,:)+ disturb(3);
+    Ysu(4,:) = Ts/m*cos(Ys(3,:))*(U(1)+U(2)) - Ts/g + Ys(4,:) + disturb(4);
+    Ysu(5,:) = Ys(5,:) + Ts*Ys(6,:) + disturb(5);
+    Ysu(6,:) = Ts*r/I*(U(1)-U(2)) + Ys(6,:) + disturb(6);
+    YY = [YY, Ysu];
     end
+
     
 end
 
