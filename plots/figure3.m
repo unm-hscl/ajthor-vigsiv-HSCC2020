@@ -1,5 +1,64 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% We start by defining the problem. This means specifying the time horizon, the
+% constraint set, or "safe set", and the target set.
 
+% We define the time horizon as N=5.
+N = 50;
 
+% For the stochastic chain of integrators example, the safe set is defined as
+% |x| <= 1 and the target set is defined as |x| <= 0.5.
+K = @(x) all(abs(x) <= 1);
+T = @(x) all(abs(x) <= 0.5);
+
+args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
+problem = FirstHittingTimeProblem(args{:});
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Generate the samples of the system via simulation.
+
+A = [1, 0.25; 0, 1];
+B = [0.03125; 0.25];
+
+s = linspace(-1.1, 1.1, 50);
+[X1, X2] = meshgrid(s);
+X = [reshape(X1, 1, []); reshape(X2, 1, [])];
+U = zeros(1, size(X, 2));
+
+W = 0.1.*betarnd(2, 0.5, size(X));
+
+Y = A*X + B*U + W;
+
+args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+samplesWithBetaDisturbance = SystemSamples(args{:});
+
+W = 0.01.*exprnd(3, size(X));
+
+Y = A*X + B*U + W;
+
+args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+samplesWithExponentialDisturbance = SystemSamples(args{:});
+
+% Generate test points.
+s = linspace(-1, 1, 100);
+[X1, X2] = meshgrid(s);
+Xtest = [reshape(X1, 1, []); reshape(X2, 1, [])];
+Utest = zeros(1, size(Xtest, 2));
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define the algorithm.
+args = {'Sigma', 0.1, 'Lambda', 1};
+algorithm = KernelDistributionEmbeddings(args{:});
+
+% Compute the safety probabilities.
+args = {problem, samplesWithBetaDisturbance, Xtest, Utest};
+PrBeta = algorithm.ComputeSafetyProbabilities(args{:});
+
+% Compute the safety probabilities.
+args = {problem, samplesWithExponentialDisturbance, Xtest, Utest};
+PrExp = algorithm.ComputeSafetyProbabilities(args{:});
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plot the results.
 width = 80;
 height = 137;
 
@@ -7,7 +66,7 @@ figure('Units', 'points', ...
        'Position', [0, 0, 243, 172])
 
 ax1 = subplot(1, 2, 1, 'Units', 'points');
-surf(ax1, s, s, reshape(results_beta.Pr(1, :), 100, 100), 'EdgeColor', 'none');
+surf(ax1, s, s, reshape(PrBeta(1, :), 100, 100), 'EdgeColor', 'none');
 view([0 90]);
 
 colorbar(ax1, 'off');
@@ -19,7 +78,7 @@ ax1.YLabel.String = '$x_{2}$';
 set(ax1, 'FontSize', 8);
 
 ax2 = subplot(1, 2, 2, 'Units', 'points');
-surf(ax2, s, s, reshape(results_exp.Pr(1, :), 100, 100), 'EdgeColor', 'none');
+surf(ax2, s, s, reshape(PrExp(1, :), 100, 100), 'EdgeColor', 'none');
 view([0 90]);
 
 colorbar(ax2);

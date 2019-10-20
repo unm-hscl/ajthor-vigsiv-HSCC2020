@@ -6,7 +6,9 @@ classdef ProfileKernelDistributionEmbeddingsRFF < matlab.perftest.TestCase
 % KernelDistributionEmbeddingsProfiler profiles
 
 properties
-    problem
+    ChainOfIntegratorsProblem
+    PlanarQuadrotorProblem
+    RepeatedPlanarQuadrotorProblem
 
     samples
     Xtest
@@ -16,7 +18,7 @@ properties
 end
 
 methods (TestMethodSetup)
-    function defineProblem(testCase)
+    function defineProblemForChainOfIntegrators(testCase)
         % We define the time horizon as N=5.
         N = 5;
 
@@ -28,7 +30,39 @@ methods (TestMethodSetup)
         args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
         problem = FirstHittingTimeProblem(args{:});
 
-        testCase.problem = problem;
+        testCase.ChainOfIntegratorsProblem = problem;
+
+    end
+
+    function defineProblemForPlanarQuadrotor(testCase)
+        % We define the time horizon as N=5.
+        N = 5;
+
+        % For the stochastic chain of integrators example, the safe set is
+        % defined as |x| <= 1 and the target set is defined as |x| <= 0.5.
+        K = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0);
+        T = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0.8);
+
+        args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
+        problem = FirstHittingTimeProblem(args{:});
+
+        testCase.PlanarQuadrotorProblem = problem;
+
+    end
+
+    function defineProblemForRepeatedPlanarQuadrotor(testCase)
+        % We define the time horizon as N=1.
+        N = 1;
+
+        % For the stochastic chain of integrators example, the safe set is
+        % defined as |x| <= 1 and the target set is defined as |x| <= 0.5.
+        K = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0);
+        T = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0.8);
+
+        args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
+        problem = FirstHittingTimeProblem(args{:});
+
+        testCase.RepeatedPlanarQuadrotorProblem = problem;
 
     end
 

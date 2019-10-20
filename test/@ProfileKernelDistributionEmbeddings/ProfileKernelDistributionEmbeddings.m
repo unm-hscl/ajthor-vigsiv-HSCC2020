@@ -6,7 +6,9 @@ classdef ProfileKernelDistributionEmbeddings < matlab.perftest.TestCase
 % KernelDistributionEmbeddingsProfiler profiles
 
 properties
-    problem
+    ChainOfIntegratorsProblem
+    PlanarQuadrotorProblem
+    RepeatedPlanarQuadrotorProblem
 
     samples
     Xtest
@@ -16,19 +18,51 @@ properties
 end
 
 methods (TestMethodSetup)
-    function defineProblem(testCase)
+    function defineProblemForChainOfIntegrators(testCase)
         % We define the time horizon as N=5.
         N = 5;
 
-        % For the stochastic chain of integrators example, the safe set is defined as
-        % |x| <= 1 and the target set is defined as |x| <= 0.5.
+        % For the stochastic chain of integrators example, the safe set is
+        % defined as |x| <= 1 and the target set is defined as |x| <= 0.5.
         K = @(x) all(abs(x) <= 1);
         T = @(x) all(abs(x) <= 0.5);
 
         args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
         problem = FirstHittingTimeProblem(args{:});
 
-        testCase.problem = problem;
+        testCase.ChainOfIntegratorsProblem = problem;
+
+    end
+
+    function defineProblemForPlanarQuadrotor(testCase)
+        % We define the time horizon as N=5.
+        N = 5;
+
+        % For the stochastic chain of integrators example, the safe set is
+        % defined as |x| <= 1 and the target set is defined as |x| <= 0.5.
+        K = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0);
+        T = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0.8);
+
+        args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
+        problem = FirstHittingTimeProblem(args{:});
+
+        testCase.PlanarQuadrotorProblem = problem;
+
+    end
+
+    function defineProblemForRepeatedPlanarQuadrotor(testCase)
+        % We define the time horizon as N=1.
+        N = 1;
+
+        % For the stochastic chain of integrators example, the safe set is
+        % defined as |x| <= 1 and the target set is defined as |x| <= 0.5.
+        K = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0);
+        T = @(x) all(0 <= x(1) & x(1) <= 1 & x(2) >= 0.8);
+
+        args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
+        problem = FirstHittingTimeProblem(args{:});
+
+        testCase.RepeatedPlanarQuadrotorProblem = problem;
 
     end
 
@@ -76,7 +110,7 @@ methods (Test)
 
     function profileChainOfIntegratorsWithGaussianDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.ChainOfIntegratorsProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
@@ -94,7 +128,7 @@ methods (Test)
 
     function profileChainOfIntegratorsWithBetaDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.ChainOfIntegratorsProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
@@ -112,7 +146,7 @@ methods (Test)
 
     function profileChainOfIntegratorsWithExponentialDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.ChainOfIntegratorsProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
@@ -130,7 +164,7 @@ methods (Test)
 
     function profilePlanarQuadrotorWithGaussianDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.PlanarQuadrotorProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
@@ -148,7 +182,7 @@ methods (Test)
 
     function profilePlanarQuadrotorWithBetaDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.PlanarQuadrotorProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
@@ -166,7 +200,7 @@ methods (Test)
 
     function profileRepeatedPlanarQuadrotorWithGaussianDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.RepeatedPlanarQuadrotorProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
@@ -184,7 +218,7 @@ methods (Test)
 
     function profileRepeatedPlanarQuadrotorWithBetaDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.RepeatedPlanarQuadrotorProblem; %#ok<*PROP>
 
         samples     = testCase.samples;
         Xtest       = testCase.Xtest;
