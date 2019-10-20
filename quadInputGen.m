@@ -33,7 +33,7 @@ Q = 10*eye(size(A,2)*N);
 R = 1*eye(size(B,2)*N);
 X_d = repmat(x_d,[N 1]); 
 
-cvx_begin
+cvx_begin quiet
 
 variable X(size(A,2)*N,)
 variable U(size(B,2)*N,)
@@ -52,7 +52,8 @@ subject to
 
     end
     
-    abs(U) <= ulim; 
+    U >= ulim(1);
+    U <= ulim(2);
     
 cvx_end
 end

@@ -5,6 +5,9 @@
 % We define the time horizon as N=5.
 N = 5;
 
+% Number of quadcopters 
+nq = 10
+
 % For the stochastic chain of integrators example, the safe set is defined as
 % |x| <= 1 and the target set is defined as |x| <= 0.5.
 K = @(x) all(abs(x) <= 1);
@@ -16,27 +19,30 @@ problem = FirstHittingTimeProblem(args{:});
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate the samples of the system via simulation.
 
-A = [1, 0.25; 0, 1];
-B = [0.03125; 0.25];
+params.n_copters = 1;
+params.N = 5;
+params.Ts = 0.25;
+params.X_d = [0 0 1 0 0 0]';
+params.Xmin = -2.5;
+params.Xmax = 2.5;
+params.dXmin = 0;
+params.dXmax = -0.1;
+params.Ymin = -0.1;
+params.Ymax = 1;
+params.dYmin = -0.1;
+params.dYmax = 0.1;
+params.Tmin = -pi;
+params.Tmax = pi;
+params.dTmin = -0.1;
+params.dTmax = 0.1;
+params.el = [10, 2, 10, 2, 4, 2];
+params.Umin = -1;
+params.Umax = 1;
 
-s = linspace(-1.1, 1.1, 50);
-[X1, X2] = meshgrid(s);
-X = [reshape(X1, 1, []); reshape(X2, 1, [])];
-U = zeros(1, size(X, 2));
-
-W = 0.1.*betarnd(2, 0.5, size(X));
-
-Y = A*X + B*U + W;
+[X,Y] = generate_samples_quad(params);
 
 args = {[2 1], 'X', X, 'U', U, 'Y', Y};
 samplesWithBetaDisturbance = SystemSamples(args{:});
-
-W = 0.01.*exprnd(3, size(X));
-
-Y = A*X + B*U + W;
-
-args = {[2 1], 'X', X, 'U', U, 'Y', Y};
-samplesWithExponentialDisturbance = SystemSamples(args{:});
 
 % Generate test points.
 s = linspace(-1, 1, 100);
