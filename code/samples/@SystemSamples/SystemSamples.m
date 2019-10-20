@@ -25,6 +25,11 @@ end
 
 properties (Dependent)
     %
+    n
+    %
+    m
+
+    %
     StateSamplesX
 
     %
@@ -90,6 +95,44 @@ methods
         obj.InputSamplesU_ = p.Results.U;
 
         obj.StateSamplesY_ = p.Results.Y;
+    end
+
+    function n = get.n(obj)
+        n = obj.Dimensions_(1);
+    end
+
+    function m = get.m(obj)
+        m = obj.Dimensions_(1);
+    end
+
+    function samples = get.StateSamplesX(obj)
+        % StateSamplesX Returns the regularization parameter for the algorithm.
+        samples = obj.StateSamplesX_;
+    end
+
+    function set.StateSamplesX(obj, samples)
+        % StateSamplesX Sets the regularization parameter for the algorithm.
+        obj.StateSamplesX_ = samples;
+    end
+
+    function samples = get.InputSamplesU(obj)
+        % InputSamplesU Returns the regularization parameter for the algorithm.
+        samples = obj.InputSamplesU_;
+    end
+
+    function set.InputSamplesU(obj, samples)
+        % InputSamplesU Sets the regularization parameter for the algorithm.
+        obj.InputSamplesU_ = samples;
+    end
+
+    function samples = get.StateSamplesY(obj)
+        % StateSamplesY Returns the regularization parameter for the algorithm.
+        samples = obj.StateSamplesY_;
+    end
+
+    function set.StateSamplesY(obj, samples)
+        % StateSamplesY Sets the regularization parameter for the algorithm.
+        obj.StateSamplesY_ = samples;
     end
 
 end

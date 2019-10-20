@@ -20,6 +20,8 @@ properties (Access = private)
     % parameter sigma. Sigma is defined as a numeric, scalar value that must
     % be strictly positive.
     Sigma_  (1, 1) {mustBeNumeric, mustBePositive} = 0.1
+
+    D_  (1, 1) {mustBeNumeric, mustBePositive} = 0.1
 end
 
 properties (Dependent)
@@ -28,6 +30,8 @@ properties (Dependent)
 
     % Sigma The kernel bandwidth parameter for the algorithm.
     Sigma
+
+    D
 end
 
 methods
@@ -53,15 +57,22 @@ methods
         validateSigma = ...
             @(arg) validateattributes(arg, {'numeric'}, {'positive'});
 
+        validateD = ...
+            @(arg) validateattributes(arg, {'numeric'}, {'positive'});
+
         % Specify the parameter defaults.
         defaultLambda = 1;
 
         defaultSigma = 0.1;
 
+        defaultD = 1;
+
         % Add name/value parameters that are passed to the class constructor.
         addParameter(p, 'Lambda', defaultLambda, validateLambda);
 
         addParameter(p, 'Sigma',  defaultSigma,  validateSigma);
+
+        addParameter(p, 'D',  defaultD,  validateD);
 
         % Parse the parameters. These are stored in the p.Results struct after
         % parsing.
@@ -72,26 +83,36 @@ methods
 
         obj.Sigma_ = p.Results.Sigma;
 
+        obj.D_ = p.Results.D;
+
     end
 
-    function Set = get.Lambda(obj)
+    function lambda = get.Lambda(obj)
         % Lambda Returns the regularization parameter for the algorithm.
-        Set = obj.Lambda_;
+        lambda = obj.Lambda_;
     end
 
-    function set.Lambda(obj, Set)
+    function set.Lambda(obj, lambda)
         % Lambda Sets the regularization parameter for the algorithm.
-        obj.Lambda_ = Set;
+        obj.Lambda_ = lambda;
     end
 
-    function Set = get.Sigma(obj)
+    function sigma = get.Sigma(obj)
         % Sigma Returns the kernel bandwidth parameter for the algorithm.
-        Set = obj.Sigma_;
+        sigma = obj.Sigma_;
     end
 
-    function set.Sigma(obj, Set)
+    function set.Sigma(obj, sigma)
         % Sigma Sets the kernel bandwidth parameter for the algorithm.
-        obj.Sigma_ = Set;
+        obj.Sigma_ = sigma;
+    end
+
+    function d = get.D(obj)
+        d = obj.D_;
+    end
+
+    function set.D(obj, d)
+        obj.D_ = d;
     end
 end
 

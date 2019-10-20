@@ -16,8 +16,8 @@ end
 
 methods (Abstract)
     % All classes inheriting from AlgorithmBaseClass are required to implement
-    % the abstract method `implementation`.
-    implementation()
+    % the abstract method `ComputeSafetyProbabilities`.
+    ComputeSafetyProbabilities()
 end
 
 end

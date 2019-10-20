@@ -79,25 +79,41 @@ methods
 
     end
 
-    function Set = get.Lambda(obj)
+    function lambda = get.Lambda(obj)
         % Lambda Returns the regularization parameter for the algorithm.
-        Set = obj.Lambda_;
+        lambda = obj.Lambda_;
     end
 
-    function set.Lambda(obj, Set)
+    function set.Lambda(obj, lambda)
         % Lambda Sets the regularization parameter for the algorithm.
-        obj.Lambda_ = Set;
+        obj.Lambda_ = lambda;
     end
 
-    function Set = get.Sigma(obj)
+    function sigma = get.Sigma(obj)
         % Sigma Returns the kernel bandwidth parameter for the algorithm.
-        Set = obj.Sigma_;
+        sigma = obj.Sigma_;
     end
 
-    function set.Sigma(obj, Set)
+    function set.Sigma(obj, sigma)
         % Sigma Sets the kernel bandwidth parameter for the algorithm.
-        obj.Sigma_ = Set;
+        obj.Sigma_ = sigma;
     end
+
+    function C = ComputeKernel(obj, X, Y)
+
+        M = size(X, 2);
+        T = size(Y, 2);
+
+        C = zeros(M, T);
+
+        for k = 1:size(X, 1)
+            C = C + (repmat(Y(k, :), [M, 1]) - repmat(X(k, :)', [1, T])).^2;
+        end
+
+        C = exp(-C/(2*obj.Sigma^2));
+
+    end
+
 end
 
 end
