@@ -20,8 +20,7 @@ A = [1, 0.25; 0, 1];
 B = [0.03125; 0.25];
 
 s = linspace(-1.1, 1.1, 50);
-[X1, X2] = meshgrid(s);
-X = [reshape(X1, 1, []); reshape(X2, 1, [])];
+X = generateUniformSamples(s);
 U = zeros(1, size(X, 2));
 
 W = 0.1.*betarnd(2, 0.5, size(X));
@@ -40,8 +39,7 @@ samplesWithExponentialDisturbance = SystemSamples(args{:});
 
 % Generate test points.
 s = linspace(-1, 1, 100);
-[X1, X2] = meshgrid(s);
-Xtest = [reshape(X1, 1, []); reshape(X2, 1, [])];
+Xtest = generateUniformSamples(s);
 Utest = zeros(1, size(Xtest, 2));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,7 +64,9 @@ figure('Units', 'points', ...
        'Position', [0, 0, 243, 172])
 
 ax1 = subplot(1, 2, 1, 'Units', 'points');
-surf(ax1, s, s, reshape(PrBeta(1, :), 100, 100), 'EdgeColor', 'none');
+data = reshape(PrBeta(1, :), 100, 100);
+ph = surf(ax1, s, s, data);
+ph.EdgeColor = 'none';
 view([0 90]);
 
 colorbar(ax1, 'off');
@@ -78,7 +78,9 @@ ax1.YLabel.String = '$x_{2}$';
 set(ax1, 'FontSize', 8);
 
 ax2 = subplot(1, 2, 2, 'Units', 'points');
-surf(ax2, s, s, reshape(PrExp(1, :), 100, 100), 'EdgeColor', 'none');
+data = reshape(PrExp(1, :), 100, 100);
+ph = surf(ax2, s, s, data);
+ph.EdgeColor = 'none';
 view([0 90]);
 
 colorbar(ax2);
