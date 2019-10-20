@@ -18,14 +18,14 @@ params.N = 1;
 params.Xmin = -2.5;
 params.Xmax = 2.5;
 params.dXmin = 0;
-params.dXmax = 0.1;
+params.dXmax = -0.1;
 params.Ymin = -0.1;
 params.Ymax = 1;
-params.dYmin = 0;
+params.dYmin = -0.1;
 params.dYmax = 0.1;
-params.Tmin = -1;
-params.Tmax = 1;
-params.dTmin = 0;
+params.Tmin = -pi;
+params.Tmax = pi;
+params.dTmin = -0.1;
 params.dTmax = 0.1;
 
 params.Umin = 5;
@@ -43,7 +43,7 @@ scatter(Ys(1, :), Ys(3, :));
 
 % Replicate  the target and safe-set for all quadcopters: 
 
-target_set_x = [0 1]';
+target_set_x = [-1 1]';
 
 for k = 1:(params.n_copters-1)
     
@@ -189,6 +189,7 @@ for k = N:-1:1
   xlabel('$x_{1}$', 'Interpreter', 'latex')
   ylabel('$x_{2}$', 'Interpreter', 'latex')
   caxis([0 1]);
+  axis([-1.1 1.1 0.5 1])
   colorbar
   view([0, 90]);
   set(gca, 'FontSize', 8, 'FontName','Times');
