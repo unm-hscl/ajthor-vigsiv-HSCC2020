@@ -1,4 +1,4 @@
-function U = quadInputGen(N,Ts,ulim,x0,x_d)
+function U = quadInputGen(N,Ts,x0,x_d)
 
 %% Generate system matrices.
 
@@ -30,7 +30,7 @@ B = sysd.B;
          
 
 Q = 10*eye(size(A,2)*N);
-R = 1*eye(size(B,2)*N);
+R = 10*eye(size(B,2)*N);
 X_d = repmat(x_d,[N 1]); 
 
 cvx_begin quiet
@@ -52,8 +52,6 @@ subject to
 
     end
     
-    U >= ulim(1);
-    U <= ulim(2);
     
 cvx_end
 end

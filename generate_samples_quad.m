@@ -19,8 +19,7 @@ dTmin = params.dTmin;
 dTmax = params.dTmax;
 Umin = params.Umin;
 Umax = params.Umax;
-
-ulim = [Umin Umax];
+dtype = params.dtype;
 
 
 % el  = [10, 2, 10, 2, 4, 2]; 
@@ -46,8 +45,13 @@ dY = reshape(dYdY, 1, []);
 T = reshape(TT, 1, []);
 dT = reshape(dTdT, 1, []);
 
-% % Generate input samples.
-% U = [5; 5];
+%% System parameters: 
+
+m = 5; 
+r = 2;
+I = 2;
+g = 9.81;
+
 
 %% Generate sample vectors.
 
@@ -57,44 +61,40 @@ YY = [];
 % For the state
 Xs = [X; dX; Y; dY; T; dT];
 
-% For the input:
+% For the disturbance: 
 
+% For the output:
 
-for k = 1:size(Xs,2)
-    
-    U(:,k) = quadInputGen(N,Ts,ulim,Xs(:,k),X_d);  
-    
-    U = reshape(U, 2, []);
-    Ys = Xs(:, k);
-    for q = 1:N
-    % Compute the samples that result from this.
-    XX = [XX, Ys];
-    Ysu(1,:) = Ys(1,:) + Ts*Ys(2,:) + disturb(1);
-    Ysu(2,:) = -Ts/m*sin(Ys(3,:))*(U(1)+U(2)) + Ys(2,:) + disturb(2);
-    Ysu(3,:) = Ys(3,:) + Ts*Ys(4,:)+ disturb(3);
-    Ysu(4,:) = Ts/m*cos(Ys(3,:))*(U(1)+U(2)) - Ts/g + Ys(4,:) + disturb(4);
-    Ysu(5,:) = Ys(5,:) + Ts*Ys(6,:) + disturb(5);
-    Ysu(6,:) = Ts*r/I*(U(1)-U(2)) + Ys(6,:) + disturb(6);
-    YY = [YY, Ysu];
+    for k = 1:size(Xs,2)
+        k
+        U = quadInputGen(60,Ts,Xs(:,k),X_d);  
+        U = reshape(U, 2, []);
+
+        if dtype == 1
+            Ys(1,k) = Xs(1,k) + Ts*Xs(2,k) + 1E-3*randn(1);
+            Ys(2,k) = -Ts/m*sin(Xs(3,k))*(U(1,1)+U(2,1)) + Xs(2,k) + 1E-5*randn(1);
+            Ys(3,k) = Xs(3,k) + Ts*Xs(4,k)+ 1E-3*randn(1);
+            Ys(4,k) = Ts/m*cos(Xs(3,k))*(U(1,1)+U(2,1)) - Ts/g + Xs(4,k) + 1E-5*randn(1);
+            Ys(5,k) = Xs(5,k) + Ts*Xs(6,k) + 1E-3*randn(1);
+            Ys(6,k) = Ts*r/I*(U(1,1)-U(2,1)) + Xs(6,k) + 1E-5*randn(1);
+        elseif dtype == 2
+            Ys(1,k) = Xs(1,k) + Ts*Xs(2,k) + 0.1*betarnd(1,0.5);
+            Ys(2,k) = -Ts/m*sin(Xs(3,k))*(U(1,1)+U(2,1)) + Xs(2,k) + 0.1*betarnd(1,0.5);
+            Ys(3,k) = Xs(3,k) + Ts*Xs(4,k)+ 0.1*betarnd(1,0.5);
+            Ys(4,k) = Ts/m*cos(Xs(3,k))*(U(1,1)+U(2,1)) - Ts/g + Xs(4,k) + 0.1*betarnd(1,0.5);
+            Ys(5,k) = Xs(5,k) + Ts*Xs(6,k) + 0.1*betarnd(1,0.5);
+            Ys(6,k) = Ts*r/I*(U(1,1)-U(2,1)) + Xs(6,k) + 0.1*betarnd(1,0.5);
+        end
+
     end
 
     
-end
-
-
-%% Generate output samples.
-
-for i = 1:N
-    
-
-    
-end
-    
-
 switch nargout
-case 1
-  varargout{1} = Ys;
 case 2
   varargout{1} = Ys;
+  varargout{2} = Us;
+case 3
+  varargout{1} = Ys;
   varargout{2} = Xs;
+  varargout{2} = Us;
 end

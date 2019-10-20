@@ -12,9 +12,10 @@
 
 clc, clear, close all
 
-q = 1;
 params.n_copters = 1;
-params.N = 1;
+params.N = 5;
+params.Ts = 0.25;
+params.X_d = [0 0 1 0 0 0]';
 params.Xmin = -2.5;
 params.Xmax = 2.5;
 params.dXmin = 0;
@@ -27,15 +28,17 @@ params.Tmin = -pi;
 params.Tmax = pi;
 params.dTmin = -0.1;
 params.dTmax = 0.1;
+params.el = [10, 2, 10, 2, 4, 2];
+params.Umin = -1;
+params.Umax = 1;
+params.dtype = 1;
 
-params.Umin = 5;
-params.Umax = 5;
-
-[Ys,Xs] = generate_samples_quad(q,params);
+[Ys,Xs] = generate_samples_quad(params);
+Xt = generate_samples_quad(params);
 
 
-N = 6;
-% 
+% load('quadGaussianSamples.mat');
+
 figure
 hold on
 scatter(Ys(1, :), Ys(3, :));
@@ -101,16 +104,14 @@ W = K + lambda * m * eye(m);
 % assume that the value function is the same over the entire time horizon, we
 % don't recompute this for each time step.
 
-Vk = compute_value_functions(N, Xs, Ys, W,target_set_x,safe_set_x);
+Vk = compute_value_functions(params.N, Xs, Ys, W,target_set_x,safe_set_x);
 
 %% Generate test samples.
 %
 % Compute input samples for the test points.
-Xt = generate_samples_quad(q,params);
+% Xt = generate_samples_quad(params);
+load('quadGaussianTestSamples.mat')
 
-
-% mt = ceil(sqrt(sqrt(mt)))^4;
-% mt = ceil(sqrt(mt))^2;
 mt = size(Xt, 2);
 
 %% Compute beta values.
@@ -127,14 +128,14 @@ Beta = W\Beta;
 Beta = Beta./sum(Beta, 1);
 
 %% Compute the transition probabilities.
-Pr = zeros(N, mt);
+Pr = zeros(params.N, mt);
 
 
-Pr(N, :) = prod(double(Xt(3:6:end, :) >= 0.8 & ...
+Pr(params.N, :) = prod(double(Xt(3:6:end, :) >= 0.8 & ...
                   Xt(1:6:end, :) >= target_set_x(1:2:end)& ...
                   Xt(1:6:end, :) <= target_set_x(2:2:end)),1);
 
-for k = N-1:-1:1
+for k = params.N-1:-1:1
 
     
   Pr(k, :) = prod(double(Xt(3:6:end, :) >= 0.8& ...
@@ -167,7 +168,7 @@ n = 100;
 % figure('Units', 'points', ...
        % 'Position', [0, 0, 245, 172])
 figure
-surf(XX, YY, griddata(x, y, Pr(N, :), XX, YY), 'EdgeColor','none');
+surf(XX, YY, griddata(x, y, Pr(params.N, :), XX, YY), 'EdgeColor','none');
 % xlim([-2, 2]);
 % ylim([-2, 0]);
 xlabel('$x_{1}$', 'Interpreter', 'latex')
@@ -182,8 +183,8 @@ set(gca, 'FontSize', 8, 'FontName','Times');
 
 figure
 
-for k = N:-1:1
-  subplot(1, N, k);
+for k = params.N:-1:1
+  subplot(1, params.N, k);
   ax = surf(XX, YY, griddata(x, y, Pr(k, :), XX, YY));
   ax.EdgeColor = 'none';
   xlabel('$x_{1}$', 'Interpreter', 'latex')
