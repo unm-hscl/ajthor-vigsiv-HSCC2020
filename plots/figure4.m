@@ -5,7 +5,7 @@ clc, clear, close all
 % We define the time horizon as N=5.
 N = 5;
 
-safe_set_x = [-2 2]';
+safe_set_x = [-1 1]';
 K = @(x) prod(double(x(3:6:end, :) >= 0 & ...
                   x(1:6:end, :) >= safe_set_x(1:2:end)& ...
                   x(1:6:end, :) <= safe_set_x(2:2:end)&...
@@ -22,23 +22,23 @@ problem = FirstHittingTimeProblem(args{:});
 % Generate the samples of the system via simulation.
 
 Ts = 0.25;
-% X_d = [0 0 1 0 0 0]';
-% Xmin = -2.5;
-% Xmax = 2.5;
-% dXmin = 0;
-% dXmax = -0.1;
-% Ymin = -0.1;
-% Ymax = 1;
-% dYmin = -0.1;
-% dYmax = 0.1;
-% Tmin = -pi;
-% Tmax = pi;
-% dTmin = -0.1;
-% dTmax = 0.1;
-% el = [7, 2, 7, 2, 4, 2];
-% Umin = -1;
-% Umax = 1;
-dtype = 1;
+X_d = [0 0 1 0 0 0]';
+Xmin = -2.5;
+Xmax = 2.5;
+dXmin = 0;
+dXmax = -0.1;
+Ymin = -0.1;
+Ymax = 1;
+dYmin = -0.1;
+dYmax = 0.1;
+Tmin = -pi;
+Tmax = pi;
+dTmin = -0.1;
+dTmax = 0.1;
+el = [7, 2, 7, 2, 4, 2];
+Umin = -1;
+Umax = 1;
+dtype = 2;
 % 
 % X = linspace(Xmin, Xmax, el(1));
 % dX = linspace(dXmin, dXmax, el(2));
@@ -62,7 +62,8 @@ dtype = 1;
 %     Us(:,k) = quadInputGen(60,Ts,Xs(:,k),X_d);
 % end
 load('quadSamples.mat')
-Us = 0.01*Us(1:2,:);
+Xs = Xs(:,1:end);
+Us = 0.01*Us(1:2,1:end);
 Ys = generate_output_samples_quad(Xs,Us,Ts,1);
 
 args = {[6 1], 'X', Xs, 'U', Us, 'Y', Ys};
@@ -74,11 +75,25 @@ args = {[6 1], 'X', Xs, 'U', Us, 'Y', Ys};
 samplesWithBetaDisturbance = SystemSamples(args{:});
 
 % Generate test points.
-% s = linspace(-1, 1, 100);
-% [X1, X2] = meshgrid(s);
-Xtest = Xs;
-Utest = Us; %ones(2, size(Xtest, 2));
+X = linspace(Xmin, Xmax, el(1));
+dX = linspace(0, 0, el(2));
+Y = linspace(Ymin, Ymax, el(3));
+dY = linspace(0, 0, el(4));
+T = linspace(0, 0, el(5));
+dT = linspace(0, 0, el(6));
 
+[dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
+
+X = reshape(XX, 1, []);
+dX = reshape(dXdX, 1, []);
+Y = reshape(YY, 1, []);
+dY = reshape(dYdY, 1, []);
+T = reshape(TT, 1, []);
+dT = reshape(dTdT, 1, []);
+
+Xtest = [X; dX; Y; dY; T; dT];
+Xtest = Xtest(:,1:end-544);
+Utest = zeros(2, size(Xtest, 2));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the algorithm.
 args = {'Sigma', 0.1, 'Lambda', 1};
@@ -93,6 +108,11 @@ args = {problem, samplesWithBetaDisturbance, Xtest, Utest};
 PrBeta = algorithm.ComputeSafetyProbabilities(args{:});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+x = Xtest(1, :);
+y = Xtest(3, :);
+n = 32;
+
+[XX, YY] = meshgrid(linspace(min(x),max(x),n), linspace(min(y),max(y),n));
 % Plot the results.
 width = 80;
 height = 137;
@@ -100,13 +120,10 @@ height = 137;
 figure('Units', 'points', ...
        'Position', [0, 0, 243, 172])
    
-x = Xtest(1, :);
-y = Xtest(3, :);
-n = 100;
-[XX, YY] = meshgrid(linspace(min(x),max(x),n), linspace(min(y),max(y),n));
 
 ax1 = subplot(1, 2, 1, 'Units', 'points');
-surf(ax1, XX, YY, griddata(x, y, PrGauss(2, :), XX, YY), 'EdgeColor', 'none');
+data = reshape(PrGauss(2, :),32,32);
+surf(ax1,XX,YY,data, 'EdgeColor', 'none');
 view([0 90]);
 axis([-1.2 1.2 0.5 1])
 
@@ -119,7 +136,8 @@ ax1.YLabel.String = '$x_{2}$';
 set(ax1, 'FontSize', 8);
 
 ax2 = subplot(1, 2, 2, 'Units', 'points');
-surf(ax2, XX, YY, griddata(x, y, PrBeta(2, :), XX, YY), 'EdgeColor', 'none');
+data = reshape(PrGauss(2, :), 32, 32);
+surf(ax2, XX, YY, 'EdgeColor', 'none');
 view([0 90]);
 axis([-1.2 1.2 0.6 1])
 
