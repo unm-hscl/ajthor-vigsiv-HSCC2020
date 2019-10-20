@@ -6,19 +6,35 @@ classdef ProfileKernelDistributionEmbeddingsRFF < matlab.perftest.TestCase
 % KernelDistributionEmbeddingsProfiler profiles
 
 properties
-    ChainOfIntegratorsProblem
-    PlanarQuadrotorProblem
-    RepeatedPlanarQuadrotorProblem
+    IntegratorProblem
+    QuadrotorProblem
+    RepeatedQuadrotorProblem
 
-    samples
-    Xtest
-    Utest
+    IntegratorSamplesWithGaussianDisturbance
+    IntegratorSamplesWithBetaDisturbance
+    IntegratorSamplesWithExponentialDisturbance
+
+    QuadrotorSamplesWithGaussianDisturbance
+    QuadrotorSamplesWithBetaDisturbance
+
+    RepeatedQuadrotorSamplesWithGaussianDisturbance
+    RepeatedQuadrotorSamplesWithBetaDisturbance
+
+    IntegratorXtest
+    IntegratorUtest
+
+    QuadrotorXtest
+    QuadrotorUtest
+
+    RepeatedQuadrotorXtest
+    RepeatedQuadrotorUtest
 
     algorithm
 end
 
 methods (TestMethodSetup)
-    function defineProblemForChainOfIntegrators(testCase)
+
+    function defineProblemForIntegrator(testCase)
         % We define the time horizon as N=5.
         N = 5;
 
@@ -30,11 +46,11 @@ methods (TestMethodSetup)
         args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
         problem = FirstHittingTimeProblem(args{:});
 
-        testCase.ChainOfIntegratorsProblem = problem;
+        testCase.IntegratorProblem = problem;
 
     end
 
-    function defineProblemForPlanarQuadrotor(testCase)
+    function defineProblemForQuadrotor(testCase)
         % We define the time horizon as N=5.
         N = 5;
 
@@ -46,11 +62,11 @@ methods (TestMethodSetup)
         args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
         problem = FirstHittingTimeProblem(args{:});
 
-        testCase.PlanarQuadrotorProblem = problem;
+        testCase.QuadrotorProblem = problem;
 
     end
 
-    function defineProblemForRepeatedPlanarQuadrotor(testCase)
+    function defineProblemForRepeatedQuadrotor(testCase)
         % We define the time horizon as N=1.
         N = 1;
 
@@ -62,36 +78,195 @@ methods (TestMethodSetup)
         args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
         problem = FirstHittingTimeProblem(args{:});
 
-        testCase.RepeatedPlanarQuadrotorProblem = problem;
+        testCase.RepeatedQuadrotorProblem = problem;
 
     end
 
-    function generateSamples(testCase)
+    function generateIntegratorSamplesWithGaussianDisturbance(testCase)
         % Generate the samples of the system via simulation.
+
+        A = [1, 0.25; 0, 1];
+        B = [0.03125; 0.25];
+
         s = linspace(-1.1, 1.1, 50);
-        [X1, X2] = meshgrid(s);
-        X = [reshape(X1, 1, []); reshape(X2, 1, [])];
+        X = generateUniformSamples(s);
 
         U = zeros(1, size(X, 2));
 
         W = 0.01.*randn(size(X));
 
+        Y = A*X + B*U + W;
+
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
+
+        testCase.IntegratorSamplesWithGaussianDisturbance = samples;
+
+    end
+
+    function generateIntegratorSamplesWithBetaDisturbance(testCase)
+        % Generate the samples of the system via simulation.
+
         A = [1, 0.25; 0, 1];
         B = [0.03125; 0.25];
 
+        s = linspace(-1.1, 1.1, 50);
+        X = generateUniformSamples(s);
+
+        U = zeros(1, size(X, 2));
+
+        W = 0.1.*betarnd(2, 0.5, size(X));
+
         Y = A*X + B*U + W;
 
-        samples = SystemSamples([2 1], 'X', X, 'U', U, 'Y', Y);
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
 
+        testCase.IntegratorSamplesWithBetaDisturbance = samples;
+
+    end
+
+    function generateIntegratorSamplesWithExponentialDisturbance(testCase)
+        % Generate the samples of the system via simulation.
+
+        A = [1, 0.25; 0, 1];
+        B = [0.03125; 0.25];
+
+        s = linspace(-1.1, 1.1, 50);
+        X = generateUniformSamples(s);
+
+        U = zeros(1, size(X, 2));
+
+        W = 0.01.*exprnd(3, size(X));
+
+        Y = A*X + B*U + W;
+
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
+
+        testCase.IntegratorSamplesWithExponentialDisturbance = samples;
+
+    end
+
+    function generateQuadrotorSamplesWithGaussianDisturbance(testCase)
+        % Generate the samples of the system via simulation.
+
+        A = [1, 0.25; 0, 1];
+        B = [0.03125; 0.25];
+
+        s = linspace(-1.1, 1.1, 50);
+        X = generateUniformSamples(s);
+
+        U = zeros(1, size(X, 2));
+
+        W = 0.01.*randn(size(X));
+
+        Y = A*X + B*U + W;
+
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
+
+        testCase.QuadrotorSamplesWithGaussianDisturbance = samples;
+
+    end
+
+    function generateQuadrotorSamplesWithBetaDisturbance(testCase)
+        % Generate the samples of the system via simulation.
+
+        A = [1, 0.25; 0, 1];
+        B = [0.03125; 0.25];
+
+        s = linspace(-1.1, 1.1, 50);
+        X = generateUniformSamples(s);
+
+        U = zeros(1, size(X, 2));
+
+        W = 0.1.*betarnd(2, 0.5, size(X));
+
+        Y = A*X + B*U + W;
+
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
+
+        testCase.QuadrotorSamplesWithBetaDisturbance = samples;
+
+    end
+
+    function generateRepeatedQuadrotorSamplesWithGaussianDisturbance(testCase)
+        % Generate the samples of the system via simulation.
+
+        A = [1, 0.25; 0, 1];
+        B = [0.03125; 0.25];
+
+        s = linspace(-1.1, 1.1, 50);
+        X = generateUniformSamples(s);
+
+        U = zeros(1, size(X, 2));
+
+        W = 0.01.*randn(size(X));
+
+        Y = A*X + B*U + W;
+
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
+
+        testCase.RepeatedQuadrotorSamplesWithGaussianDisturbance = samples;
+
+    end
+
+    function generateRepeatedQuadrotorSamplesWithBetaDisturbance(testCase)
+        % Generate the samples of the system via simulation.
+
+        A = [1, 0.25; 0, 1];
+        B = [0.03125; 0.25];
+
+        s = linspace(-1.1, 1.1, 50);
+        X = generateUniformSamples(s);
+
+        U = zeros(1, size(X, 2));
+
+        W = 0.1.*betarnd(2, 0.5, size(X));
+
+        Y = A*X + B*U + W;
+
+        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        samples = SystemSamples(args{:});
+
+        testCase.RepeatedQuadrotorSamplesWithBetaDisturbance = samples;
+
+    end
+
+    function generateIntegratorTestPoints(testCase)
         % Generate test points.
         s = linspace(-1, 1, 100);
-        [X1, X2] = meshgrid(s);
-        Xtest = [reshape(X1, 1, []); reshape(X2, 1, [])];
+        Xtest = generateUniformSamples(s);
+
         Utest = zeros(1, size(Xtest, 2));
 
-        testCase.samples = samples;
-        testCase.Xtest = Xtest;
-        testCase.Utest = Utest;
+        testCase.IntegratorXtest = Xtest;
+        testCase.IntegratorUtest = Utest;
+    end
+
+    function generateQuadrotorTestPoints(testCase)
+        % Generate test points.
+        s = linspace(-1, 1, 100);
+        Xtest = generateUniformSamples(s);
+
+        Utest = zeros(1, size(Xtest, 2));
+
+        testCase.QuadrotorXtest = Xtest;
+        testCase.QuadrotorUtest = Utest;
+    end
+
+    function generateRepeatedQuadrotorTestPoints(testCase)
+        % Generate test points.
+        s = linspace(-1, 1, 100);
+        Xtest = generateUniformSamples(s);
+
+        Utest = zeros(1, size(Xtest, 2));
+
+        testCase.RepeatedQuadrotorXtest = Xtest;
+        testCase.RepeatedQuadrotorUtest = Utest;
     end
 
     function defineAlgorithm(testCase)
@@ -107,13 +282,13 @@ end
 
 methods (Test)
 
-    function profileChainOfIntegratorsWithGaussianDisturbance(testCase)
+    function profileIntegratorWithGaussianDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.IntegratorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.IntegratorSamplesWithGaussianDisturbance;
+        Xtest       = testCase.IntegratorXtest;
+        Utest       = testCase.IntegratorUtest;
 
         algorithm   = testCase.algorithm;
 
@@ -125,13 +300,13 @@ methods (Test)
 
     end
 
-    function profileChainOfIntegratorsWithBetaDisturbance(testCase)
+    function profileIntegratorWithBetaDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.IntegratorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.IntegratorSamplesWithBetaDisturbance;
+        Xtest       = testCase.IntegratorXtest;
+        Utest       = testCase.IntegratorUtest;
 
         algorithm   = testCase.algorithm;
 
@@ -143,13 +318,13 @@ methods (Test)
 
     end
 
-    function profileChainOfIntegratorsWithExponentialDisturbance(testCase)
+    function profileIntegratorWithExponentialDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.IntegratorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.IntegratorSamplesWithExponentialDisturbance;
+        Xtest       = testCase.IntegratorXtest;
+        Utest       = testCase.IntegratorUtest;
 
         algorithm   = testCase.algorithm;
 
@@ -161,13 +336,13 @@ methods (Test)
 
     end
 
-    function profilePlanarQuadrotorWithGaussianDisturbance(testCase)
+    function profileQuadrotorWithGaussianDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.QuadrotorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.QuadrotorSamplesWithGaussianDisturbance;
+        Xtest       = testCase.QuadrotorXtest;
+        Utest       = testCase.QuadrotorUtest;
 
         algorithm   = testCase.algorithm;
 
@@ -179,13 +354,13 @@ methods (Test)
 
     end
 
-    function profilePlanarQuadrotorWithBetaDisturbance(testCase)
+    function profileQuadrotorWithBetaDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.QuadrotorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.QuadrotorSamplesWithBetaDisturbance;
+        Xtest       = testCase.QuadrotorXtest;
+        Utest       = testCase.QuadrotorUtest;
 
         algorithm   = testCase.algorithm;
 
@@ -197,13 +372,13 @@ methods (Test)
 
     end
 
-    function profileRepeatedPlanarQuadrotorWithGaussianDisturbance(testCase)
+    function profileRepeatedQuadrotorWithGaussianDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.RepeatedQuadrotorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.RepeatedQuadrotorSamplesWithGaussianDisturbance;
+        Xtest       = testCase.RepeatedQuadrotorXtest;
+        Utest       = testCase.RepeatedQuadrotorUtest;
 
         algorithm   = testCase.algorithm;
 
@@ -215,13 +390,13 @@ methods (Test)
 
     end
 
-    function profileRepeatedPlanarQuadrotorWithBetaDisturbance(testCase)
+    function profileRepeatedQuadrotorWithBetaDisturbance(testCase)
         % Compute the safety probabilities.
-        problem     = testCase.problem; %#ok<*PROP>
+        problem     = testCase.RepeatedQuadrotorProblem; %#ok<*PROP>
 
-        samples     = testCase.samples;
-        Xtest       = testCase.Xtest;
-        Utest       = testCase.Utest;
+        samples     = testCase.RepeatedQuadrotorSamplesWithBetaDisturbance;
+        Xtest       = testCase.RepeatedQuadrotorXtest;
+        Utest       = testCase.RepeatedQuadrotorUtest;
 
         algorithm   = testCase.algorithm;
 
