@@ -169,7 +169,7 @@ methods (TestMethodSetup)
 
         X = [
                 randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randi([-1, 1], 1, M);
                 randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
@@ -211,7 +211,7 @@ methods (TestMethodSetup)
 
         X = [
                 randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randi([-1, 1], 1, M);
                 randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
@@ -255,7 +255,7 @@ methods (TestMethodSetup)
 
         X = [
                 randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randi([-1, 1], 1, M);
                 randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
@@ -305,7 +305,7 @@ methods (TestMethodSetup)
 
         X = [
                 randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randi([-1, 1], 1, M);
                 randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
             0.1*randi([-1, 1], 1, M);
