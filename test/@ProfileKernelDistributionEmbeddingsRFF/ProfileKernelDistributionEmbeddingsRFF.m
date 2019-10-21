@@ -151,17 +151,37 @@ methods (TestMethodSetup)
     function generateQuadrotorSamplesWithGaussianDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        A = [1, 0.25; 0, 1];
-        B = [0.03125; 0.25];
+        M = 2500;
 
-        s = linspace(-1.1, 1.1, 50);
-        X = generateUniformSamples(s);
+        m = 5;
+        r = 2;
+        I = 2;
+        g = 9.81;
 
-        U = zeros(1, size(X, 2));
+        f = @(x, u) [
+            x(1, :) + 0.25*x(2, :);
+            -0.25/m*sin(x(3, :)).*(u(1, :) + u(2, :)) + x(2, :);
+            x(3, :) + 0.25*x(4, :);
+             0.25/m*cos(x(3, :)).*(u(1, :) + u(2, :)) - 0.25/g + x(4, :);
+            x(5, :) + 0.25*x(6, :);
+             0.25*r/I*(u(1, :) - u(2, :)) + x(6, :)
+        ];
 
-        W = 0.01.*randn(size(X));
+        X = [
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
 
-        Y = A*X + B*U + W;
+        U = [
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Y = f(X, U) + [1E-3 1E-5 1E-3 1E-5 1E-3 1E-5]*randn(6, M);
 
         args = {[2 1], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
@@ -173,17 +193,37 @@ methods (TestMethodSetup)
     function generateQuadrotorSamplesWithBetaDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        A = [1, 0.25; 0, 1];
-        B = [0.03125; 0.25];
+        M = 2500;
 
-        s = linspace(-1.1, 1.1, 50);
-        X = generateUniformSamples(s);
+        m = 5;
+        r = 2;
+        I = 2;
+        g = 9.81;
 
-        U = zeros(1, size(X, 2));
+        f = @(x, u) [
+            x(1, :) + 0.25*x(2, :);
+            -0.25/m*sin(x(3, :)).*(u(1, :) + u(2, :)) + x(2, :);
+            x(3, :) + 0.25*x(4, :);
+             0.25/m*cos(x(3, :)).*(u(1, :) + u(2, :)) - 0.25/g + x(4, :);
+            x(5, :) + 0.25*x(6, :);
+             0.25*r/I*(u(1, :) - u(2, :)) + x(6, :)
+        ];
 
-        W = 0.1.*betarnd(2, 0.5, size(X));
+        X = [
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
 
-        Y = A*X + B*U + W;
+        U = [
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Y = f(X, U) + [1E-3 1E-5 1E-3 1E-5 1E-3 1E-5]*betarnd(2, 0.5, 6, M);
 
         args = {[2 1], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
@@ -195,17 +235,45 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorSamplesWithGaussianDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        A = [1, 0.25; 0, 1];
-        B = [0.03125; 0.25];
+        M = 30000;
 
-        s = linspace(-1.1, 1.1, 50);
-        X = generateUniformSamples(s);
+        Nq = 170000;
 
-        U = zeros(1, size(X, 2));
+        m = 5;
+        r = 2;
+        I = 2;
+        g = 9.81;
 
-        W = 0.01.*randn(size(X));
+        f = @(x, u) [
+            x(1, :) + 0.25*x(2, :);
+            -0.25/m*sin(x(3, :)).*(u(1, :) + u(2, :)) + x(2, :);
+            x(3, :) + 0.25*x(4, :);
+             0.25/m*cos(x(3, :)).*(u(1, :) + u(2, :)) - 0.25/g + x(4, :);
+            x(5, :) + 0.25*x(6, :);
+             0.25*r/I*(u(1, :) - u(2, :)) + x(6, :)
+        ];
 
-        Y = A*X + B*U + W;
+        X = [
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        U = [
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Y = f(X, U);
+
+        X = repmat(X, Nq, 1);
+        U = repmat(U, Nq, 1);
+        Y = repmat(Y, Nq, 1);
+
+        Y = Y + repmat([1E-3 1E-5 1E-3 1E-5 1E-3 1E-5], 1, Nq)*rand(6*Nq, M);
 
         args = {[2 1], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
@@ -217,17 +285,45 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorSamplesWithBetaDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        A = [1, 0.25; 0, 1];
-        B = [0.03125; 0.25];
+        M = 30000;
 
-        s = linspace(-1.1, 1.1, 50);
-        X = generateUniformSamples(s);
+        Nq = 170000;
 
-        U = zeros(1, size(X, 2));
+        m = 5;
+        r = 2;
+        I = 2;
+        g = 9.81;
 
-        W = 0.1.*betarnd(2, 0.5, size(X));
+        f = @(x, u) [
+            x(1, :) + 0.25*x(2, :);
+            -0.25/m*sin(x(3, :)).*(u(1, :) + u(2, :)) + x(2, :);
+            x(3, :) + 0.25*x(4, :);
+             0.25/m*cos(x(3, :)).*(u(1, :) + u(2, :)) - 0.25/g + x(4, :);
+            x(5, :) + 0.25*x(6, :);
+             0.25*r/I*(u(1, :) - u(2, :)) + x(6, :)
+        ];
 
-        Y = A*X + B*U + W;
+        X = [
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        U = [
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Y = f(X, U);
+
+        X = repmat(X, Nq, 1);
+        U = repmat(U, Nq, 1);
+        Y = repmat(Y, Nq, 1);
+
+        Y = Y + 0.1*betarnd(2, 0.5, 6*Nq, M);
 
         args = {[2 1], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
