@@ -235,7 +235,7 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorSamplesWithGaussianDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        M = 30000;
+        M = 2500;
 
         Nq = 170000;
 
@@ -285,7 +285,7 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorSamplesWithBetaDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        M = 30000;
+        M = 2500;
 
         Nq = 170000;
 
@@ -348,7 +348,7 @@ methods (TestMethodSetup)
     function generateQuadrotorTestPoints(testCase)
         % Generate test points.
 
-        M = 30000;
+        M = 10000;
 
         Xtest = [
                 randi([-1, 1], 1, M);
@@ -372,7 +372,7 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorTestPoints(testCase)
         % Generate test points.
 
-        M = 30000;
+        M = 1;
 
         Nq = 170000;
 
