@@ -334,6 +334,7 @@ methods (TestMethodSetup)
 
     function generateIntegratorTestPoints(testCase)
         % Generate test points.
+
         s = linspace(-1, 1, 100);
         Xtest = generateUniformSamples(s);
 
@@ -341,28 +342,60 @@ methods (TestMethodSetup)
 
         testCase.IntegratorXtest = Xtest;
         testCase.IntegratorUtest = Utest;
+
     end
 
     function generateQuadrotorTestPoints(testCase)
         % Generate test points.
-        s = linspace(-1, 1, 100);
-        Xtest = generateUniformSamples(s);
 
-        Utest = zeros(1, size(Xtest, 2));
+        M = 30000;
+
+        Xtest = [
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Utest = [
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
 
         testCase.QuadrotorXtest = Xtest;
         testCase.QuadrotorUtest = Utest;
+
     end
 
     function generateRepeatedQuadrotorTestPoints(testCase)
         % Generate test points.
-        s = linspace(-1, 1, 100);
-        Xtest = generateUniformSamples(s);
 
-        Utest = zeros(1, size(Xtest, 2));
+        M = 30000;
+
+        Nq = 170000;
+
+        Xtest = [
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+                randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Utest = [
+            0.1*randi([-1, 1], 1, M);
+            0.1*randi([-1, 1], 1, M)
+        ];
+
+        Xtest = repmat(Xtest, Nq, 1);
+        Utest = repmat(Utest, Nq, 1);
 
         testCase.RepeatedQuadrotorXtest = Xtest;
         testCase.RepeatedQuadrotorUtest = Utest;
+
     end
 
     function defineAlgorithm(testCase)
