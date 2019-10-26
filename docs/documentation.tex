@@ -141,9 +141,33 @@ Documentation for the algorithms presented in ``Stochastic Reachability for Syst
 
 The algorithms presented in \cite{thorpe} are designed to use \emph{kernel distribution embeddings} \cite{grunewalder} to solve the terminal-hitting time and first-hitting time stochastic reachability problems defined in \cite{abate, summers}.
 %
-Instructions for running the code are outlined in \ref{section: instructions}. This section also includes instructions for modifying the code for your own system.
+Detailed instructions for running the code are outlined in \ref{section: instructions}. This section also includes instructions for modifying the code for your own system.
 A description of the algorithms is presented in \ref{section: algorithms}.
 The problem definitions are documented in section \ref{section: problems}.
+
+\subsection{Entry Point}
+
+The two main entry points for the code are located in the files:
+\begin{itemize}
+  \item \verb|run_unit_tests.m|
+  \item \verb|run_perf_tests.m|
+\end{itemize}
+These files run the unit tests for the code, and run the performance tests to determine computation times for the algorithms. In order to run them, open the code in Matlab and run the following commands:
+\begin{lstlisting}[language=Matlab]
+  % Run the unit tests for the code.
+  run_unit_tests
+
+  % Run the performance tests to generate the computation time table.
+  run_perf_tests
+
+  % WARNING: The performance tests can take a significant amount of time to run.
+  % The high-dimensional repeated quadrotor example takes approx. 1.5 hours to
+  % run, and the performance testing framework will run this about seven times.
+\end{lstlisting}
+
+\subsection{Plots}
+
+The figures from \cite{thorpe} can also be generated using the scripts in the \verb|/plots| folder. Each script is labeled according to the plot number it generates in the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -331,7 +355,7 @@ Then, we can construct the first-hitting time problem using \verb|FirstHittingTi
 
 The algorithms presented
 
-See section \ref{section: samples} for more information about the required sample format and an example of generating samples via simulation. 
+See section \ref{section: samples} for more information about the required sample format and an example of generating samples via simulation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -10,8 +10,8 @@ N = 5;
 K = @(x) all(abs(x) <= 1);
 T = @(x) all(abs(x) <= 0.5);
 
-problem = FirstHittingTimeProblem('TimeHorizon', N, ...
-                                  'ConstraintSet', K, 'TargetSet', T);
+args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
+problem = FirstHittingTimeProblem(args{:});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate the samples of the system via simulation.
@@ -25,7 +25,8 @@ B = [0.03125; 0.25];
 
 Y = A*X + B*U + W;
 
-samples = SystemSamples([2 1], 'X', X, 'U', U, 'Y', Y);
+args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+samples = SystemSamples(args{:});
 
 % Generate test points.
 s = linspace(-1, 1, 100);
@@ -34,21 +35,24 @@ Utest = zeros(1, size(Xtest, 2));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the algorithm.
-algorithm = KernelDistributionEmbeddings('Sigma', 0.1, 'Lambda', 1);
+args = {'Sigma', 0.1, 'Lambda', 1};
+algorithm = KernelDistributionEmbeddings(args{:});
 
 % Compute the safety probabilities.
 Pr = algorithm.ComputeSafetyProbabilities(problem, samples, Xtest, Utest);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the algorithm.
-algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, ...
-                                            'D', 15000);
+args = {'Sigma', 0.1, 'Lambda', 1, 'D', 15000};
+algorithm = KernelDistributionEmbeddingsRFF(args{:});
 
 % Compute the safety probabilities.
 PrRFF = algorithm.ComputeSafetyProbabilities(problem, samples, Xtest, Utest);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the results.
+
+% Load the dynamic programming results for the comparison plots.
 load('DynamicProgrammingFHT.mat')
 
 width = 80;

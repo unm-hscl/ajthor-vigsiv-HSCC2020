@@ -151,7 +151,7 @@ methods (TestMethodSetup)
     function generateQuadrotorSamplesWithGaussianDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        M = 2500;
+        M = 1000;
 
         m = 5;
         r = 2;
@@ -168,17 +168,17 @@ methods (TestMethodSetup)
         ];
 
         X = [
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+                randn(1, M);
+            0.1*randn(1, M);
+                randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         U = [
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Y = f(X, U) + [1E-3 1E-5 1E-3 1E-5 1E-3 1E-5]*randn(6, M);
@@ -193,7 +193,7 @@ methods (TestMethodSetup)
     function generateQuadrotorSamplesWithBetaDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        M = 2500;
+        M = 1000;
 
         m = 5;
         r = 2;
@@ -210,17 +210,17 @@ methods (TestMethodSetup)
         ];
 
         X = [
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+                randn(1, M);
+            0.1*randn(1, M);
+                randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         U = [
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Y = f(X, U) + [1E-3 1E-5 1E-3 1E-5 1E-3 1E-5]*betarnd(2, 0.5, 6, M);
@@ -235,7 +235,7 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorSamplesWithGaussianDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        M = 2500;
+        M = 1000;
 
         Nq = 170000;
 
@@ -254,17 +254,17 @@ methods (TestMethodSetup)
         ];
 
         X = [
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+                randn(1, M);
+            0.1*randn(1, M);
+                randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         U = [
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Y = f(X, U);
@@ -285,7 +285,7 @@ methods (TestMethodSetup)
     function generateRepeatedQuadrotorSamplesWithBetaDisturbance(testCase)
         % Generate the samples of the system via simulation.
 
-        M = 2500;
+        M = 1000;
 
         Nq = 170000;
 
@@ -304,17 +304,17 @@ methods (TestMethodSetup)
         ];
 
         X = [
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+                randn(1, M);
+            0.1*randn(1, M);
+                randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         U = [
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Y = f(X, U);
@@ -351,17 +351,17 @@ methods (TestMethodSetup)
         M = 10000;
 
         Xtest = [
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+                randn(1, M);
+            0.1*randn(1, M);
+                randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Utest = [
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         testCase.QuadrotorXtest = Xtest;
@@ -376,25 +376,31 @@ methods (TestMethodSetup)
 
         Nq = 170000;
 
+        ds = datastore('repeatedQuadrotorXtest.mat');
+        Xtest = tall(ds);
+
+        ds = datastore('repeatedQuadrotorUtest.mat');
+        Utest = tall(ds);
+
         Xtest = [
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-                randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+                randn(1, M);
+            0.1*randn(1, M);
+                randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Utest = [
-            0.1*randi([-1, 1], 1, M);
-            0.1*randi([-1, 1], 1, M)
+            0.1*randn(1, M);
+            0.1*randn(1, M)
         ];
 
         Xtest = repmat(Xtest, Nq, 1);
         Utest = repmat(Utest, Nq, 1);
 
-        testCase.RepeatedQuadrotorXtest = Xtest;
-        testCase.RepeatedQuadrotorUtest = Utest;
+        % testCase.RepeatedQuadrotorXtest = Xtest;
+        % testCase.RepeatedQuadrotorUtest = Utest;
 
     end
 
