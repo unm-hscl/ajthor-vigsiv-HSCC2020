@@ -11,7 +11,14 @@ The following code generates the plots and figures presented in [1]. Figure 1 is
 
 ## Figure 2
 
-Figure 2 shows the
+Figure 2 shows the results of the two algorithms, as well as the comparison to
+the dynamic programming results. The first plot shows the dynamic programming
+results, the second shows the results from the `KernelDistributionEmbeddings`
+algorithm. The third shows the absolute error between the dynamic programming
+results and the results from `KernelDistributionEmbeddings`. The fourth shows
+the results from `KernelDistributionEmbeddingsRFF`. The fifth shows the absolute
+error between the dynamic programming results and the results from
+`KernelDistributionEmbeddingsRFF`.
 
 ## Figure 3
 

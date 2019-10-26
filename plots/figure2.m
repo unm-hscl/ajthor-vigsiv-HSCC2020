@@ -1,4 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% figure2.m
+%
+% This figure shows the results of the two algorithms, as well as the comparison
+% to the dynamic programming results. The first plot shows the dynamic
+% programming results, the second shows the results from the
+% KernelDistributionEmbeddings algorithm. The third shows the absolute error
+% between the dynamic programming results and the results from
+% KernelDistributionEmbeddings. The fourth shows the results from
+% KernelDistributionEmbeddingsRFF. The fifth shows the absolute error between
+% the dynamic programming results and the results from
+% KernelDistributionEmbeddingsRFF.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We start by defining the problem. This means specifying the time horizon, the
 % constraint set, or "safe set", and the target set.
 

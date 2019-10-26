@@ -1,4 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% figure2.m
+%
+% This figure shows the results of the two algorithms, as well as the comparison
+% to the dynamic programming results. The first plot shows the dynamic
+% programming results, the second shows the results from the
+% KernelDistributionEmbeddings algorithm. The third shows the absolute error
+% between the dynamic programming results and the results from
+% KernelDistributionEmbeddings. The fourth shows the results from
+% KernelDistributionEmbeddingsRFF. The fifth shows the absolute error between
+% the dynamic programming results and the results from
+% KernelDistributionEmbeddingsRFF.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We start by defining the problem. This means specifying the time horizon, the
 % constraint set, or "safe set", and the target set.
 clc, clear, close all
@@ -108,7 +123,7 @@ height = 137;
 
 figure('Units', 'points', ...
        'Position', [0, 0, 243, 172])
-   
+
 ax1 = subplot(1, 2, 1, 'Units', 'points');
 surf(ax1, x, y, reshape(PrGauss(1, :), 100, 100), 'EdgeColor', 'none');
 view([0 90]);
