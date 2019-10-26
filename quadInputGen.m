@@ -31,28 +31,32 @@ B = sysd.B;
 
 Q = 10*eye(size(A,2)*N);
 R = 10*eye(size(B,2)*N);
-X_d = repmat(x_d,[N 1]); 
 
-cvx_begin quiet
+K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
+         0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982;];
+     
+U = K*(x0-x_d); 
 
-variable X(size(A,2)*N,)
-variable U(size(B,2)*N,)
-
-
-minimize((X-X_d)'*Q*(X-X_d) + U'*R*U)
-
-subject to
-
-    X(1:size(A,2)) == x0;
-
-    for k = 1:(N-1)
-        
-        X(size(A,2)*k+1:size(A,2)*(k+1)) == ...
-            A*X(size(A,2)*(k-1)+1:size(A,2)*(k)) + B*U(size(B,2)*(k-1)+1:size(B,2)*(k)); 
-
-    end
-    
-    
-cvx_end
+% cvx_begin quiet
+% 
+% variable X(size(A,2)*N,)
+% variable U(size(B,2)*N,)
+% 
+% 
+% minimize((X-X_d)'*Q*(X-X_d) + U'*R*U)
+% 
+% subject to
+% 
+%     X(1:size(A,2)) == x0;
+% 
+%     for k = 1:(N-1)
+%         
+%         X(size(A,2)*k+1:size(A,2)*(k+1)) == ...
+%             A*X(size(A,2)*(k-1)+1:size(A,2)*(k)) + B*U(size(B,2)*(k-1)+1:size(B,2)*(k)); 
+% 
+%     end
+%     
+%     
+% cvx_end
 end
 

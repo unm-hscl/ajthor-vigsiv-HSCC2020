@@ -22,56 +22,55 @@ problem = FirstHittingTimeProblem(args{:});
 % Generate the samples of the system via simulation.
 
 Ts = 0.25;
-% X_d = [0 0 1 0 0 0]';
-% Xmin = -2.5;
-% Xmax = 2.5;
-% dXmin = 0;
-% dXmax = -0.1;
-% Ymin = -0.1;
-% Ymax = 1;
-% dYmin = -0.1;
-% dYmax = 0.1;
-% Tmin = -pi;
-% Tmax = pi;
-% dTmin = -0.1;
-% dTmax = 0.1;
-% el = [7, 2, 7, 2, 4, 2];
-% Umin = -1;
-% Umax = 1;
+X_d = [0 0 1 0 0 0]';
+Xmin = -1.1;
+Xmax = 1.1;
+dXmin = 0;
+dXmax = -0.1;
+Ymin = -0.1;
+Ymax = 1;
+dYmin = -0.1;
+dYmax = 0.1;
+Tmin = -pi;
+Tmax = pi;
+dTmin = -0.1;
+dTmax = 0.1;
+el = [10, 3, 10, 3, 3, 2];
+Umin = -1;
+Umax = 1;
 dtype = 1;
-% 
-% X = linspace(Xmin, Xmax, el(1));
-% dX = linspace(dXmin, dXmax, el(2));
-% Y = linspace(Ymin, Ymax, el(3));
-% dY = linspace(dYmin, dYmax, el(4));
-% T = linspace(Tmin, Tmax, el(5));
-% dT = linspace(dTmin, dTmax, el(6));
-% 
-% [dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
-% 
-% X = reshape(XX, 1, []);
-% dX = reshape(dXdX, 1, []);
-% Y = reshape(YY, 1, []);
-% dY = reshape(dYdY, 1, []);
-% T = reshape(TT, 1, []);
-% dT = reshape(dTdT, 1, []);
-% 
-% Xs = [X; dX; Y; dY; T; dT];
-% for k = 1:size(Xs,2)
-%     k
-%     Us(:,k) = quadInputGen(60,Ts,Xs(:,k),X_d);
-% end
-load('quadSamples.mat')
-Us = 0.01*Us(1:2,:);
-Ys = generate_output_samples_quad(Xs,Us,Ts,1);
 
-args = {[6 1], 'X', Xs, 'U', Us, 'Y', Ys};
-samplesWithGaussianDisturbance = SystemSamples(args{:});
+X = linspace(Xmin, Xmax, el(1));
+dX = linspace(dXmin, dXmax, el(2));
+Y = linspace(Ymin, Ymax, el(3));
+dY = linspace(dYmin, dYmax, el(4));
+T = linspace(Tmin, Tmax, el(5));
+dT = linspace(dTmin, dTmax, el(6));
 
-Ys = generate_output_samples_quad(Xs,Us,Ts,2);
+[dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
 
-args = {[6 1], 'X', Xs, 'U', Us, 'Y', Ys};
-samplesWithBetaDisturbance = SystemSamples(args{:});
+X = reshape(XX, 1, []);
+dX = reshape(dXdX, 1, []);
+Y = reshape(YY, 1, []);
+dY = reshape(dYdY, 1, []);
+T = reshape(TT, 1, []);
+dT = reshape(dTdT, 1, []);
+
+Xs = [X; dX; Y; dY; T; dT];
+for k = 1:size(Xs,2)
+    Us(:,k) = quadInputGen(60,Ts,Xs(:,k),X_d);
+end
+% load('quadSamples.mat')
+Us2 = 0.01*Us(1:2,:);
+Ys = generate_output_samples_quad(Xs,Us2,Ts,1);
+
+args1 = {[6 1], 'X', Xs, 'U', Us2, 'Y', Ys};
+samplesWithGaussianDisturbance = SystemSamples(args1{:});
+
+Ys = generate_output_samples_quad(Xs,Us2,Ts,2);
+
+args2 = {[6 1], 'X', Xs, 'U', Us2, 'Y', Ys};
+samplesWithBetaDisturbance = SystemSamples(args2{:});
 
 % Generate test points.
 % s = linspace(-1, 1, 100);
@@ -92,14 +91,18 @@ algorithm = KernelDistributionEmbeddings(args{:});
 
 % Compute the safety probabilities.
 args = {problem, samplesWithGaussianDisturbance, Xtest, Utest};
+
 PrGauss = algorithm.ComputeSafetyProbabilities(args{:});
+
 
 % % Compute the safety probabilities.
 args = {problem, samplesWithBetaDisturbance, Xtest, Utest};
+tic
 PrBeta = algorithm.ComputeSafetyProbabilities(args{:});
+toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plot the results.
+%% Plot the results.
 width = 80;
 height = 137;
 
@@ -114,9 +117,9 @@ axis([-1.1 1.1 0.5 1])
 colorbar(ax1, 'off');
 ax1.Position = [30, 25, width, 137];
 ax1.XLabel.Interpreter = 'latex';
-ax1.XLabel.String = '$x_{1}$';
+ax1.XLabel.String = '$z_{1}$';
 ax1.YLabel.Interpreter = 'latex';
-ax1.YLabel.String = '$x_{2}$';
+ax1.YLabel.String = '$z_{2}$';
 set(ax1, 'FontSize', 8);
 
 ax2 = subplot(1, 2, 2, 'Units', 'points');
@@ -128,7 +131,7 @@ colorbar(ax2);
 ax2.YAxis.Visible = 'off';
 ax2.Position = [30 + 90, 25, width, 137];
 ax2.XLabel.Interpreter = 'latex';
-ax2.XLabel.String = '$x_{1}$';
+ax2.XLabel.String = '$z_{1}$';
 ax2.YLabel.Interpreter = 'latex';
-ax2.YLabel.String = '$x_{2}$';
+ax2.YLabel.String = '$z_{2}$';
 set(ax2, 'FontSize', 8);
