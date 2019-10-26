@@ -125,7 +125,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Documentation for the algorithms presented in ``Stochastic Reachability for Systems up to a Million Dimensions'' by Adam J. Thorpe, Vignesh Sivaramakrishnan, Meeko M. K. Oishi.
+Documentation for the algorithms presented in ``Stochastic Reachability for Systems up to a Million Dimensions'' by Adam J. Thorpe, Vignesh Sivaramakrishnan, Meeko M. K. Oishi \cite{thorpe2019stochastic}.
 
 \tableofcontents
 
@@ -139,7 +139,7 @@ Documentation for the algorithms presented in ``Stochastic Reachability for Syst
 
 \section{Start Here}
 
-The algorithms presented in \cite{thorpe} are designed to use \emph{kernel distribution embeddings} \cite{grunewalder} to solve the terminal-hitting time and first-hitting time stochastic reachability problems defined in \cite{abate, summers}.
+The algorithms presented in \cite{thorpe2019stochastic} are designed to use \emph{kernel distribution embeddings} \cite{grunewalder2012modelling} to solve the terminal-hitting time and first-hitting time stochastic reachability problems defined in \cite{abate2008probabilistic, summers2010verification}.
 %
 Detailed instructions for running the code are outlined in \ref{section: instructions}. This section also includes instructions for modifying the code for your own system.
 A description of the algorithms is presented in \ref{section: algorithms}.
@@ -167,7 +167,7 @@ These files run the unit tests for the code, and run the performance tests to de
 
 \subsection{Plots}
 
-The figures from \cite{thorpe} can also be generated using the scripts in the \verb|/plots| folder. Each script is labeled according to the plot number it generates in the paper.
+The figures from \cite{thorpe2019stochastic} can also be generated using the scripts in the \verb|/plots| folder. Each script is labeled according to the plot number it generates in the paper.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -189,12 +189,7 @@ Using a different system for the algorithms is relatively simple. Simply substit
 \section{Samples}
 \label{section: samples}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Mathematical Preliminaries}
-
-We consider a a Markov control process $\gls{H}$, which is defined in \cite{summers} as a 3-tuple:
+We consider a a Markov control process $\gls{H}$, which is defined in \cite{summers2010verification} as a 3-tuple:
 \begin{align}
   \gls{H} = (\gls{X}, \gls{U}, \gls{Q})
 \end{align}
@@ -282,28 +277,26 @@ Once we have generated our samples, they can be stored using the \verb|SystemSam
 \section{Problems}
 \label{section: problems}
 
-We consider two problems defined in \cite{summers}:
+We consider two problems defined in \cite{summers2010verification}:
 \begin{enumerate}
   \item The \textbf{terminal-hitting time problem} (\ref{section: terminal-hitting time problem}), which is the probability that a system will remain safe over a time horizon and reach a target set at the final time.
   \item The \textbf{first-hitting time problem} (\ref{section: first-hitting time problem}), which is the probability that a system will reach a target set at some time in the time horizon, and remain safe until it reaches the target set.
 \end{enumerate}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Mathematical Preliminaries}
-
 Let $\gls{T}, \gls{K} \in \gls{X}$ denote the \emph{target set} and \emph{safe set}, respectively.
 %
-We denote the time horizon of the problem as $k \in [0, \gls{N}]$, where $\gls{N} \in \mathbb{N}$ is the final time of the system, and $k \in \mathbb{N}$ is the time index.
-
-The algorithms scale well with increased time horizons, ...
+We denote the time horizon of the problem as $k \in [0, \gls{N}]$, where $\gls{N} \in \mathbb{N}$ is the final time of the system, and $k \in \mathbb{N}$ is the time index. We define sets in the code using functions that test whether a point is within the set or not. These functions can be Matlab function handles or defined as anonymous functions.
+%
+The algorithms scale well with increased time horizons, provided that the functions used to check for set containment are not computationally intensive.
+%
+These functions should be analogous to simple indicator functions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Terminal-Hitting Time Problem}
 \label{section: terminal-hitting time problem}
 
-The terminal-hitting time problem is defined in \cite{summers} as the probability that a system $\gls{H}$ will reach a target set $\gls{T}$ at some time $\gls{N}$ while avoiding the \emph{unsafe set} $\gls{X}\backslash\gls{K}$ for $k \in [0, \gls{N}-1]$.
+The terminal-hitting time problem is defined in \cite{summers2010verification} as the probability that a system $\gls{H}$ will reach a target set $\gls{T}$ at some time $\gls{N}$ while avoiding the \emph{unsafe set} $\gls{X}\backslash\gls{K}$ for $k \in [0, \gls{N}-1]$.
 
 As an example, we consider a stochastic double integrator.
 We can construct the safe set and target set by specifying the sets as functions which check whether a sample is contained within the set.
@@ -328,7 +321,7 @@ Then, we can construct the terminal-hitting time problem using \verb|TerminalHit
 \subsection{First-Hitting Time Problem}
 \label{section: first-hitting time problem}
 
-The first-hitting time problem is defined in \cite{summers} as the probability that a system $\gls{H}$ will reach a target set $\gls{T}$ at some time $j \in [0, \gls{N}]$ while avoiding the \emph{unsafe set} $\gls{X}\backslash\gls{K}$ for $k \in [0, j-1]$.
+The first-hitting time problem is defined in \cite{summers2010verification} as the probability that a system $\gls{H}$ will reach a target set $\gls{T}$ at some time $j \in [0, \gls{N}]$ while avoiding the \emph{unsafe set} $\gls{X}\backslash\gls{K}$ for $k \in [0, j-1]$.
 
 As an example, we consider a stochastic double integrator.
 We can construct the safe set and target set by specifying the sets as functions which check whether a sample is contained within the set.
@@ -394,13 +387,13 @@ In this section, we address some common pitfalls when using the algorithm.
   \textbf{Choosing incorrect parameter values.} The algorithm parameter values
   can have a dramatic impact on the quality of the approximation computed via
   the algorithm. However, the parameter values are less important than in other
-  kernel methods, such as Support Vector Machines \cite{vapnik}. This is handled
+  kernel methods, such as Support Vector Machines \cite{drucker1997support}. This is handled
   somewhat by the normalization coefficient $\eta$, that is applied when the
   algorithm is computed. The default algorithm parameters are: $\sigma = 0.1$
   and $\lambda = 1$. In practice, these values do not need to be changed, though
   it is possible to choose slightly better parameters via cross validation. A
   cross-validation scheme for choosing these parameters is discussed in
-  \cite{michelli}.
+  \cite{micchelli2005learning}.
 
   \item
   \textbf{Choosing a low value of $D$.} For algorithm 2 using random Fourier features, the algorithm requires you to specify a parameter value $D$, which is the dimensionality of the reduced Gram matrix. For low-dimensional systems, this value may result in a higher-dimensional Gram matrix than algorithm 1. Increasing the value of $D$ may help improve the approximation using algorithm 2.
