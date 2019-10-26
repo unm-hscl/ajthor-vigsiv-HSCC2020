@@ -361,10 +361,26 @@ See section \ref{section: samples} for more information about the required sampl
 
 \subsection{Kernel Distribution Embeddings Backward Recursion Algorithm}
 
+\begin{lstlisting}[language=Matlab]
+% Define the algorithm Kernel Distribution Embeddings
+algorithm = KernelDistributionEmbeddings('Sigma', 0.1, 'Lambda', 1);
+
+% Compute the safety probabilities at the points in '(Xtest, Utest)'.
+algorithm.ComputeSafetyProbabilities(problem, samples, Xtest, Utest);
+\end{lstlisting}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Kernel Distribution Embeddings Backward Recursion (RFF) Algorithm}
+
+\begin{lstlisting}[language=Matlab]
+% Define the algorithm Kernel Distribution Embeddings (RFF)
+algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, 'D', 1000);
+
+% Compute the safety probabilities at the points in '(Xtest, Utest)'.
+algorithm.ComputeSafetyProbabilities(problem, samples, Xtest, Utest);
+\end{lstlisting}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -406,6 +422,9 @@ In this section, we address some common pitfalls when using the algorithm.
   values in some of the calculations and will produce undefined results. In
   practice, a small percentage of the samples, such as 5-10\% must be within the
   target set for the algorithms to work properly.
+
+  \item
+  \textbf{Confusing samples and test points.} There is a difference between what are called ``samples'' or ``observations'', which are used to create the approximation, and ``test'' or ``evaluation'' points, which are the points we want to evaluate the safety probabilities for via the algorithms. The samples can be thought of as the data, which should characterize the space as much as possible. The test points are the initial conditions we want to compute the safety probabilities for.
 \end{enumerate}
 
 Several safeguards are present in the code which prevent some of these issues

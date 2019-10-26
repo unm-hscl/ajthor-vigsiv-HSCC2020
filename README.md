@@ -47,6 +47,11 @@ git clone https://github.com/unm-hscl/ajthor-vigsiv-HSCC2020.git
 Matlab and use the Matlab scripts in the root directory of the repository as a
 starting point. In order to adapt the code for your own purposes, see the
 [documentation](docs/documentation.pdf) accompanying the code.
+* **I just want to see the implementation.** An implementation of the `KernelDistributionEmbeddings` algorithm is located
+[here](code/algorithms/@KernelDistributionEmbeddings/ComputeSafetyProbabilities.m),
+while the implementation of the `KernelDistributionEmbeddingsRFF` algorithm is
+located
+[here](code/algorithms/@KernelDistributionEmbeddingsRFF/ComputeSafetyProbabilities.m).
 * **How do I test the code?** Unit tests written using Matlab's testing
 framework are provided with the code. In order to run the tests, use the
 `run_unit_tests.m` script located in the root directory of the repository, or
