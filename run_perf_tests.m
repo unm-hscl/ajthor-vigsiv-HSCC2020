@@ -42,10 +42,10 @@ T.NumberOfSamplePoints = {
     2500;
     2500;
     2500;
-    2500;
-    2500;
-    2500;
-    2500
+    1000;
+    1000;
+    1000;
+    1000
 };
 
 T.NumberOfEvaluationPoints = {
