@@ -2,13 +2,15 @@
 
 ## Table of Contents
 
-* [First-Hitting Time Problem](#first-hitting_time_problem)
-* [Terminal-Hitting Time Problem](#terminal-hitting_time_problem)
+* [First-Hitting Time Problem](#first-hitting-time-problem)
+* [Terminal-Hitting Time Problem](#terminal-hitting-time-problem)
 * [References](#references)
 
 ## First-Hitting Time Problem
 
-The first-hitting time problem is defined in [1] as
+The first-hitting time problem is defined in [1] as the probability that a
+system will reach a target set at some time during the time horizon, while
+remaining safe for the time up until it reaches the target set.
 
 ### Usage
 
@@ -29,7 +31,9 @@ problem = TerminalHittingTimeProblem('ConstraintSet', ConstraintSet, ...
 
 ## Terminal-Hitting Time Problem
 
-The first-hitting time problem is defined in [1] as
+The first-hitting time problem is defined in [1] as the probability that a
+system will reach a target set at the final time of the time horizon, while
+remaining safe for the entire horizon.
 
 ### Usage
 
