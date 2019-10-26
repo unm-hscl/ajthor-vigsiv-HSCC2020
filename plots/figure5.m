@@ -1,10 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% figure3.m
+% # figure5.m
 %
-% This figure shows the results of the KernelDistributionEmbeddingsRFF 
-% algorithm. The plots show the run of the KernelDistributionEmbeddingsRFF
-% for a double integrator with a gaussian disturbance at varying number of
-% frequency samples. 
+% This figure shows the results of the KernelDistributionEmbeddings 
+% algorithm. Specifically, for the double integrator system with affine
+% disturbance and no input. The the results are shown for exponential and
+% beta disturbances. 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -13,7 +13,7 @@
 % constraint set, or "safe set", and the target set.
 
 % We define the time horizon as N=5.
-N = 5;
+N = 50;
 
 % For the stochastic chain of integrators example, the safe set is defined as
 % |x| <= 1 and the target set is defined as |x| <= 0.5.
@@ -33,19 +33,19 @@ s = linspace(-1.1, 1.1, 50);
 X = generateUniformSamples(s);
 U = zeros(1, size(X, 2));
 
-W = 0.01.*randn(size(X));
+W = 0.1.*betarnd(2, 0.5, size(X));
 
 Y = A*X + B*U + W;
 
 args = {[2 1], 'X', X, 'U', U, 'Y', Y};
-samplesWithGauss1Disturbance = SystemSamples(args{:});
+samplesWithBetaDisturbance = SystemSamples(args{:});
 
-W = 0.01.*randn(size(X));
+W = 0.01.*exprnd(3, size(X));
 
 Y = A*X + B*U + W;
 
 args = {[2 1], 'X', X, 'U', U, 'Y', Y};
-samplesWithGauss2Disturbance = SystemSamples(args{:});
+samplesWithExponentialDisturbance = SystemSamples(args{:});
 
 % Generate test points.
 s = linspace(-1, 1, 100);
@@ -54,20 +54,16 @@ Utest = zeros(1, size(Xtest, 2));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the algorithm.
-algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, ...
-                                            'D', 10000);
+args = {'Sigma', 0.1, 'Lambda', 1};
+algorithm = KernelDistributionEmbeddings(args{:});
 
 % Compute the safety probabilities.
-args = {problem, samplesWithGauss1Disturbance, Xtest, Utest};
-PrGauss1 = algorithm.ComputeSafetyProbabilities(args{:});
-
-% Define the algorithm.
-algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, ...
-                                            'D', 12500);
+args = {problem, samplesWithBetaDisturbance, Xtest, Utest};
+PrBeta = algorithm.ComputeSafetyProbabilities(args{:});
 
 % Compute the safety probabilities.
-args = {problem, samplesWithGauss2Disturbance, Xtest, Utest};
-PrGauss2 = algorithm.ComputeSafetyProbabilities(args{:});
+args = {problem, samplesWithExponentialDisturbance, Xtest, Utest};
+PrExp = algorithm.ComputeSafetyProbabilities(args{:});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plot the results.
@@ -78,7 +74,7 @@ figure('Units', 'points', ...
        'Position', [0, 0, 243, 172])
 
 ax1 = subplot(1, 2, 1, 'Units', 'points');
-data = reshape(PrGauss1(1, :), 100, 100);
+data = reshape(PrBeta(1, :), 100, 100);
 ph = surf(ax1, s, s, data);
 ph.EdgeColor = 'none';
 view([0 90]);
@@ -92,7 +88,7 @@ ax1.YLabel.String = '$x_{2}$';
 set(ax1, 'FontSize', 8);
 
 ax2 = subplot(1, 2, 2, 'Units', 'points');
-data = reshape(PrGauss2(1, :), 100, 100);
+data = reshape(PrExp(1, :), 100, 100);
 ph = surf(ax2, s, s, data);
 ph.EdgeColor = 'none';
 view([0 90]);

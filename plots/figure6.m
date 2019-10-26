@@ -1,29 +1,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% figure2.m
+% figure6.m
 %
-% This figure shows the results of the two algorithms, as well as the comparison
-% to the dynamic programming results. The first plot shows the dynamic
-% programming results, the second shows the results from the
-% KernelDistributionEmbeddings algorithm. The third shows the absolute error
-% between the dynamic programming results and the results from
-% KernelDistributionEmbeddings. The fourth shows the results from
-% KernelDistributionEmbeddingsRFF. The fifth shows the absolute error between
-% the dynamic programming results and the results from
-% KernelDistributionEmbeddingsRFF.
+% This figure shows the results of the KernelDistributionEmbeddings 
+% algorithm. Specifically, for the planar quadcopter system with affine
+% disturbance and stationary policy. The the results are shown for 
+% gaussian and beta disturbances. 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We start by defining the problem. This means specifying the time horizon, the
 % constraint set, or "safe set", and the target set.
-
+clc, clear, close all
 % We define the time horizon as N=5.
 N = 5;
 
-% For the stochastic chain of integrators example, the safe set is defined as
-% |x| <= 1 and the target set is defined as |x| <= 0.5.
-K = @(x) all(abs(x) <= 1);
-T = @(x) all(abs(x) <= 0.5);
+safe_set_x = [-1 1]';
+K = @(x) prod(double(x(3:6:end, :) >= 0 & ...
+                  x(1:6:end, :) >= safe_set_x(1:2:end)& ...
+                  x(1:6:end, :) <= safe_set_x(2:2:end)&...
+                  x(3:6:end, :) < 0.8),1);
+target_set_x = [-1 1]';
+T = @(x) prod(double(x(3:6:end, :) >= 0.8& ...
+                  x(1:6:end, :) >= target_set_x(1:2:end)& ...
+                  x(1:6:end, :) <= target_set_x(2:2:end)),1);
 
 args = {'TimeHorizon', N, 'ConstraintSet', K, 'TargetSet', T};
 problem = FirstHittingTimeProblem(args{:});
@@ -31,51 +31,88 @@ problem = FirstHittingTimeProblem(args{:});
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Generate the samples of the system via simulation.
 
-A = [1, 0.25; 0, 1];
-B = [0.03125; 0.25];
+Ts = 0.25;
+X_d = [0 0 1 0 0 0]';
+Xmin = -1.1;
+Xmax = 1.1;
+dXmin = 0;
+dXmax = -0.1;
+Ymin = -0.1;
+Ymax = 1;
+dYmin = -0.1;
+dYmax = 0.1;
+Tmin = -pi;
+Tmax = pi;
+dTmin = -0.1;
+dTmax = 0.1;
+el = [10, 3, 10, 3, 3, 2];
+Umin = -1;
+Umax = 1;
+dtype = 1;
 
-s = linspace(-1.1, 1.1, 50);
-X = generateUniformSamples(s);
-U = zeros(1, size(X, 2));
+X = linspace(Xmin, Xmax, el(1));
+dX = linspace(dXmin, dXmax, el(2));
+Y = linspace(Ymin, Ymax, el(3));
+dY = linspace(dYmin, dYmax, el(4));
+T = linspace(Tmin, Tmax, el(5));
+dT = linspace(dTmin, dTmax, el(6));
 
-W = 0.01.*randn(size(X));
+[dTdT, TT, dYdY, YY, dXdX, XX] = ndgrid(dT, T, dY, Y, dX, X);
 
-Y = A*X + B*U + W;
+X = reshape(XX, 1, []);
+dX = reshape(dXdX, 1, []);
+Y = reshape(YY, 1, []);
+dY = reshape(dYdY, 1, []);
+T = reshape(TT, 1, []);
+dT = reshape(dTdT, 1, []);
 
-args = {[2 1], 'X', X, 'U', U, 'Y', Y};
-samplesWithGauss1Disturbance = SystemSamples(args{:});
+Xs = [X; dX; Y; dY; T; dT];
+for k = 1:size(Xs,2)
+    Us(:,k) = quadInputGen(60,Ts,Xs(:,k),X_d);
+end
+% load('quadSamples.mat')
+Us2 = 0.01*Us(1:2,:);
+Ys = generate_output_samples_quad(Xs,Us2,Ts,1);
 
-W = 0.01.*randn(size(X));
+args1 = {[6 1], 'X', Xs, 'U', Us2, 'Y', Ys};
+samplesWithGaussianDisturbance = SystemSamples(args1{:});
 
-Y = A*X + B*U + W;
+Ys = generate_output_samples_quad(Xs,Us2,Ts,2);
 
-args = {[2 1], 'X', X, 'U', U, 'Y', Y};
-samplesWithGauss2Disturbance = SystemSamples(args{:});
+args2 = {[6 1], 'X', Xs, 'U', Us2, 'Y', Ys};
+samplesWithBetaDisturbance = SystemSamples(args2{:});
 
 % Generate test points.
-s = linspace(-1, 1, 100);
-Xtest = generateUniformSamples(s);
-Utest = zeros(1, size(Xtest, 2));
+% s = linspace(-1, 1, 100);
+% [X1, X2] = meshgrid(s);
+x = linspace(-1.1, 1.1, 100);
+y = linspace(0, 1, 100);
+z = zeros(1, 100^2);
+[xx, yy] = meshgrid(x, y);
+xx = reshape(xx, 1, []);
+yy = reshape(yy, 1, []);
+Xtest = [xx; z; yy; z; z; z];
+Utest = zeros(2,size(Xtest,2));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the algorithm.
-algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, ...
-                                            'D', 5000);
+args = {'Sigma', 0.1, 'Lambda', 1};
+algorithm = KernelDistributionEmbeddings(args{:});
 
 % Compute the safety probabilities.
-args = {problem, samplesWithGauss1Disturbance, Xtest, Utest};
-PrGauss1 = algorithm.ComputeSafetyProbabilities(args{:});
+args = {problem, samplesWithGaussianDisturbance, Xtest, Utest};
 
-% Define the algorithm.
-algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, ...
-                                            'D', 10000);
+PrGauss = algorithm.ComputeSafetyProbabilities(args{:});
 
-% Compute the safety probabilities.
-args = {problem, samplesWithGauss2Disturbance, Xtest, Utest};
-PrGauss2 = algorithm.ComputeSafetyProbabilities(args{:});
+
+% % Compute the safety probabilities.
+args = {problem, samplesWithBetaDisturbance, Xtest, Utest};
+tic
+PrBeta = algorithm.ComputeSafetyProbabilities(args{:});
+toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plot the results.
+%% Plot the results.
 width = 80;
 height = 137;
 
@@ -83,30 +120,28 @@ figure('Units', 'points', ...
        'Position', [0, 0, 243, 172])
 
 ax1 = subplot(1, 2, 1, 'Units', 'points');
-data = reshape(PrGauss1(1, :), 100, 100);
-ph = surf(ax1, s, s, data);
-ph.EdgeColor = 'none';
+surf(ax1, x, y, reshape(PrGauss(1, :), 100, 100), 'EdgeColor', 'none');
 view([0 90]);
+axis([-1.1 1.1 0.5 1])
 
 colorbar(ax1, 'off');
 ax1.Position = [30, 25, width, 137];
 ax1.XLabel.Interpreter = 'latex';
-ax1.XLabel.String = '$x_{1}$';
+ax1.XLabel.String = '$z_{1}$';
 ax1.YLabel.Interpreter = 'latex';
-ax1.YLabel.String = '$x_{2}$';
+ax1.YLabel.String = '$z_{2}$';
 set(ax1, 'FontSize', 8);
 
 ax2 = subplot(1, 2, 2, 'Units', 'points');
-data = reshape(PrGauss2(1, :), 100, 100);
-ph = surf(ax2, s, s, data);
-ph.EdgeColor = 'none';
+surf(ax2, x, y, reshape(PrBeta(1, :), 100, 100), 'EdgeColor', 'none');
 view([0 90]);
+axis([-1.1 1.1 0.5 1])
 
 colorbar(ax2);
 ax2.YAxis.Visible = 'off';
 ax2.Position = [30 + 90, 25, width, 137];
 ax2.XLabel.Interpreter = 'latex';
-ax2.XLabel.String = '$x_{1}$';
+ax2.XLabel.String = '$z_{1}$';
 ax2.YLabel.Interpreter = 'latex';
-ax2.YLabel.String = '$x_{2}$';
+ax2.YLabel.String = '$z_{2}$';
 set(ax2, 'FontSize', 8);
