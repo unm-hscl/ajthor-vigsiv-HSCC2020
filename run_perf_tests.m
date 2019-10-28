@@ -1,4 +1,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% run_perf_tests
+%
+% Runs the performance tests to benchmark the execution of the algorithms for
+% different cases.
+%
+% WARNING: This code can take a long time to run. The perfromance testing
+% framework in Matlab runs the algorithms several times to warm up the processor
+% and to get a mean measurement of the computation time. For the
+% high-dimensional examples, this means the code can take several hours to run.
+%
+% WARNING: This code takes a large amount of memory in order to run. Some
+% systems may not be able to run the code without increasing the memory limits
+% of Matlab.
+%
+% For help dealing with 'out of memory' issues, see:
+% See https://www.mathworks.com/help/matlab/large-files-and-big-data.html
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Run the profile tests to compute the run times of the algorithms.
 Results     = runperf('ProfileKernelDistributionEmbeddings');
 ResultsRFF  = runperf('ProfileKernelDistributionEmbeddingsRFF');
@@ -6,9 +26,9 @@ ResultsRFF  = runperf('ProfileKernelDistributionEmbeddingsRFF');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % We construct the static data of the table.
 
-T = table;
+Table = table;
 
-T.System = {
+Table.System = {
     'Chain of Integrators';
     'Chain of Integrators';
     'Chain of Integrators';
@@ -18,7 +38,7 @@ T.System = {
     'Planar Quadrotor'
 };
 
-T.Disturbance = {
+Table.Disturbance = {
     'Gaussian';
     'Beta';
     'Exponential';
@@ -28,7 +48,7 @@ T.Disturbance = {
     'Beta'
 };
 
-T.Dimensionality = {
+Table.Dimensionality = {
     2;
     2;
     2;
@@ -38,7 +58,7 @@ T.Dimensionality = {
     1000000
 };
 
-T.NumberOfSamplePoints = {
+Table.NumberOfSamplePoints = {
     2500;
     2500;
     2500;
@@ -48,7 +68,7 @@ T.NumberOfSamplePoints = {
     1000
 };
 
-T.NumberOfEvaluationPoints = {
+Table.NumberOfEvaluationPoints = {
     10000;
     10000;
     10000;
@@ -58,7 +78,7 @@ T.NumberOfEvaluationPoints = {
     1
 };
 
-T.NumberOfFrequencySamples = {
+Table.NumberOfFrequencySamples = {
     15000;
     15000;
     15000;
@@ -71,7 +91,7 @@ T.NumberOfFrequencySamples = {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Using the results from the profiler, we can construct the mean computation
 % time for each algorithm.
-T.Algorithm1 = {
+Table.Algorithm1 = {
     mean(Results(1).Samples.MeasuredTime);
     mean(Results(2).Samples.MeasuredTime);
     mean(Results(3).Samples.MeasuredTime);
@@ -81,7 +101,7 @@ T.Algorithm1 = {
     mean(Results(7).Samples.MeasuredTime);
 };
 
-T.Algorithm2 = {
+Table.Algorithm2 = {
     mean(ResultsRFF(1).Samples.MeasuredTime);
     mean(ResultsRFF(2).Samples.MeasuredTime);
     mean(ResultsRFF(3).Samples.MeasuredTime);
@@ -93,4 +113,4 @@ T.Algorithm2 = {
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display the table.
-openvar('T')
+openvar('Table')

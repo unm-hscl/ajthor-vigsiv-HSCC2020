@@ -25,7 +25,7 @@ formatted as easily-readable
 [Markdown](https://guides.github.com/features/mastering-markdown/). Each folder
 contains a top-level description of the folder contents and the purpose of the
 code contained inside, each file also contains comments and documentation to
-describe the code purpose and usasge, and finally a
+describe the code purpose and usage, and finally a
 [PDF](docs/documentation.pdf) describing the overall methodology and
 instructions for the code is provided in the `/docs` directory that should
 accompany the code. More information and updates can be found on the [GitHub
