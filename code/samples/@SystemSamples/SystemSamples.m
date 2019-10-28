@@ -66,11 +66,11 @@ methods
             @(arg) validateattributes(arg, {'numeric'}, {'nonempty'});
 
         % Specify the parameter defaults.
-        defaultStateSamplesX = function_handle.empty;
+        defaultStateSamplesX = zeros(Dimensions(1), 1);
 
-        defaultInputSamplesU = function_handle.empty;
+        defaultInputSamplesU = zeros(Dimensions(2), 1);
 
-        defaultStateSamplesY = 1;
+        defaultStateSamplesY = zeros(Dimensions(1), 1);
 
         % Add required parameters that must be passed to the class constructor.
         addRequired(p, 'Dimensions', validateDimensions);
@@ -92,9 +92,9 @@ methods
         % Store the parameters in private variables.
         obj.Dimensions_ = p.Results.Dimensions;
 
-        validateattributes(samples, {'numeric'}, {'nrows', obj.n});
-        validateattributes(samples, {'numeric'}, {'nrows', obj.m});
-        validateattributes(samples, {'numeric'}, {'nrows', obj.n});
+        validateattributes(p.Results.X, {'numeric'}, {'nrows', obj.n});
+        validateattributes(p.Results.U, {'numeric'}, {'nrows', obj.m});
+        validateattributes(p.Results.Y, {'numeric'}, {'nrows', obj.n});
 
         obj.StateSamplesX_ = p.Results.X;
 
@@ -110,7 +110,7 @@ methods
 
     function m = get.m(obj)
         % m Returns the input space dimensionality for the algorithm.
-        m = obj.Dimensions_(1);
+        m = obj.Dimensions_(2);
     end
 
     function samples = get.StateSamplesX(obj)

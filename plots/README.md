@@ -1,13 +1,6 @@
 # Plots
 
-The following code generates the plots and figures presented in [1]. Figure 1 is a drawing that is generated using an online drawing tool, and so is not included here. Use the following code to generate figures 2-5.
-
-## Table of Contents
-
-* [Algorithm 1 vs. Algorithm 2 vs. Dynamic Programming for a Gaussian disturbance.](#figure_2)
-* [Algorithm 1 using non-Gaussian disturbances.](#figure_3)
-* [Planar quadrotor with a Gaussian and non-Gaussian disturbance.](#figure_4)
-* [](#figure_5)
+The following code generates the plots and figures presented in [1]. Figure 1 is a drawing that is generated using an online drawing tool, and so is not included here. Use the following code to generate figures 2-6.
 
 ## Figure 2
 
@@ -22,17 +15,29 @@ error between the dynamic programming results and the results from
 
 ## Figure 3
 
-Figure 3 shows the
+Figure 3 shows This figure shows the results of the
+`KernelDistributionEmbeddingsRFF`  algorithm. The plots show the run of the
+`KernelDistributionEmbeddingsRFF` for a double integrator with a gaussian
+disturbance at varying number of frequency samples.
 
 ## Figure 4
 
-Figure 4 shows the
+Figure 4 shows the errors of the `KernelDistributionEmbeddingsRFF` algorithm at
+various numbers of frequency samples, D.
 
 ## Figure 5
 
-Figure 5 shows the
+Figure 5 shows the results of the `KernelDistributionEmbeddings`
+algorithm. Specifically, for the double integrator system with affine
+disturbance and no input. The the results are shown for exponential and
+beta disturbances.
 
+## Figure 6
 
+Figure 6 shows the results of the `KernelDistributionEmbeddings`  algorithm.
+Specifically, for the planar quadcopter system with affine disturbance and
+stationary policy. The the results are shown for  gaussian and beta
+disturbances.
 
 ## References
 

@@ -176,9 +176,6 @@ methods (TestMethodSetup)
             0.1*randn(1, M)
         ];
 
-        Q = 10*eye(size(A, 2)*N);
-        R = 10*eye(size(B, 2)*N);
-        ​
         K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
                  0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982];
 
@@ -186,7 +183,7 @@ methods (TestMethodSetup)
 
         Y = f(X, U) + [1E-3 1E-5 1E-3 1E-5 1E-3 1E-5]*randn(6, M);
 
-        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        args = {[6 2], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
 
         testCase.QuadrotorSamplesWithGaussianDisturbance = samples;
@@ -221,9 +218,6 @@ methods (TestMethodSetup)
             0.1*randn(1, M)
         ];
 
-        Q = 10*eye(size(A, 2)*N);
-        R = 10*eye(size(B, 2)*N);
-        ​
         K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
                  0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982];
 
@@ -231,7 +225,7 @@ methods (TestMethodSetup)
 
         Y = f(X, U) + [1E-3 1E-5 1E-3 1E-5 1E-3 1E-5]*betarnd(2, 0.5, 6, M);
 
-        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        args = {[6 2], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
 
         testCase.QuadrotorSamplesWithBetaDisturbance = samples;
@@ -268,10 +262,10 @@ methods (TestMethodSetup)
             0.1*randn(1, M)
         ];
 
-        U = [
-            0.1*randn(1, M);
-            0.1*randn(1, M)
-        ];
+        K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
+                 0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982];
+
+        U = K*(X - [0; 0; 1; 0; 0; 0]);
 
         Y = f(X, U);
 
@@ -279,9 +273,9 @@ methods (TestMethodSetup)
         U = repmat(U, Nq, 1);
         Y = repmat(Y, Nq, 1);
 
-        Y = Y + repmat([1E-3 1E-5 1E-3 1E-5 1E-3 1E-5], 1, Nq)*rand(6*Nq, M);
+        Y = Y + repmat([1E-3 1E-5 1E-3 1E-5 1E-3 1E-5], 1, Nq)*rand(Nq*6, M);
 
-        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        args = {[Nq*6 Nq*2], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
 
         testCase.RepeatedQuadrotorSamplesWithGaussianDisturbance = samples;
@@ -318,10 +312,10 @@ methods (TestMethodSetup)
             0.1*randn(1, M)
         ];
 
-        U = [
-            0.1*randn(1, M);
-            0.1*randn(1, M)
-        ];
+        K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
+                 0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982];
+
+        U = K*(X - [0; 0; 1; 0; 0; 0]);
 
         Y = f(X, U);
 
@@ -329,9 +323,9 @@ methods (TestMethodSetup)
         U = repmat(U, Nq, 1);
         Y = repmat(Y, Nq, 1);
 
-        Y = Y + 0.1*betarnd(2, 0.5, 6*Nq, M);
+        Y = Y + 0.1*betarnd(2, 0.5, Nq*6, M);
 
-        args = {[2 1], 'X', X, 'U', U, 'Y', Y};
+        args = {[Nq*6 Nq*2], 'X', X, 'U', U, 'Y', Y};
         samples = SystemSamples(args{:});
 
         testCase.RepeatedQuadrotorSamplesWithBetaDisturbance = samples;
@@ -365,10 +359,10 @@ methods (TestMethodSetup)
             0.1*randn(1, M)
         ];
 
-        Utest = [
-            0.1*randn(1, M);
-            0.1*randn(1, M)
-        ];
+        K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
+                 0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982];
+
+        Utest = K*(Xtest - [0; 0; 1; 0; 0; 0]);
 
         testCase.QuadrotorXtest = Xtest;
         testCase.QuadrotorUtest = Utest;
@@ -382,12 +376,6 @@ methods (TestMethodSetup)
 
         Nq = 170000;
 
-        ds = datastore('repeatedQuadrotorXtest.mat');
-        Xtest = tall(ds);
-
-        ds = datastore('repeatedQuadrotorUtest.mat');
-        Utest = tall(ds);
-
         Xtest = [
                 randn(1, M);
             0.1*randn(1, M);
@@ -397,16 +385,13 @@ methods (TestMethodSetup)
             0.1*randn(1, M)
         ];
 
-        Utest = [
-            0.1*randn(1, M);
-            0.1*randn(1, M)
-        ];
+        K = [   -0.3370   -0.6738    0.6396    1.8992    4.9544    2.0982;
+                 0.3370    0.6738    0.6396    1.8992   -4.9544   -2.0982];
 
-        Xtest = repmat(Xtest, Nq, 1);
-        Utest = repmat(Utest, Nq, 1);
+        Utest = K*(Xtest - [0; 0; 1; 0; 0; 0]);
 
-        % testCase.RepeatedQuadrotorXtest = Xtest;
-        % testCase.RepeatedQuadrotorUtest = Utest;
+        testCase.RepeatedQuadrotorXtest = repmat(Xtest, Nq, 1);
+        testCase.RepeatedQuadrotorUtest = repmat(Utest, Nq, 1);
 
     end
 
