@@ -354,6 +354,17 @@ See section \ref{section: samples} for more information about the required sampl
 
 \subsection{Kernel Distribution Embeddings Backward Recursion Algorithm}
 
+The kernel distribution embeddings employs theory from Reproducing Kernel Hilbert Spaces (RKHS) to compute conditional probabilities. Specific to~\cite{thorpe2019stochastic}, conditional distributional embeddings imply the use of kernels to compute the stochastic reach probabilities. It solves a regularized least-squares problem to recover a unique solution for the mean embedding, 
+\begin{align}
+	\bar{\mu}_{(x, u)} =
+  \eta
+	\Phi^{\top}
+	(G + \lambda M I)^{-1}
+	\Psi
+	K_{\mathcal{X} \times \mathcal{U}}((x, u), \cdot)
+  \label{eqn: estimate mu bar}
+\end{align}
+to approximate~\eqref{eq:valfunc}. Thus, one can use the function \texttt{KernelDistributionEmbeddings} and specify $\sigma$ which is the bandwidth parameter for the kernel (namely, Gaussian kernel) and $\lambda$, the regularization parameter. By using the function \texttt{algorithm.ComputeSafetyProbabilities}, one executes the backward recursion algorithm outlined in~\cite[Alg. 1]{thorpe2019stochastic},
 \begin{lstlisting}[language=Matlab]
 % Define the algorithm Kernel Distribution Embeddings
 algorithm = KernelDistributionEmbeddings('Sigma', 0.1, 'Lambda', 1);
@@ -367,6 +378,18 @@ algorithm.ComputeSafetyProbabilities(problem, samples, Xtest, Utest);
 
 \subsection{Kernel Distribution Embeddings Backward Recursion (RFF) Algorithm}
 
+Note that with a larger number of samples it becomes difficult to compute the safety probabilities for the reachability specification with kernel methods alone; therefore, one can employ the random Fourier features technique to recover a frequency based, approximation of the kernel for which the dimensionality is reduced~\cite{thorpe2019stochastic}. The mean embedding is defined as follows,
+$\bar{\mu}_{(x, u)}$,
+\begin{align}
+    \bar{\mu}_{(x, u)} &\approx
+    \zeta^{\top}
+    \gamma(x, u) \\
+    \gamma(x, u) &=
+    \nu
+    (H + \lambda M I)^{-1} Z (z(x) \otimes z(u))
+    \label{eqn: gamma coefficients}
+\end{align}
+Thus, one can use the function \texttt{KernelDistributionEmbeddingsRFF} and specify $\sigma$ which is the bandwidth parameter for the kernel (namely, Gaussian kernel) and $\lambda$, the regularization parameter, and $D$, the number of samples to take in the frequency domain. By using the function \texttt{algorithm.ComputeSafetyProbabilities}, one executes the backward recursion algorithm outlined in~\cite[Alg. 2]{thorpe2019stochastic},
 \begin{lstlisting}[language=Matlab]
 % Define the algorithm Kernel Distribution Embeddings (RFF)
 algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, 'D', 1000);
@@ -374,7 +397,6 @@ algorithm = KernelDistributionEmbeddingsRFF('Sigma', 0.1, 'Lambda', 1, 'D', 1000
 % Compute the safety probabilities at the points in '(Xtest, Utest)'.
 algorithm.ComputeSafetyProbabilities(problem, samples, Xtest, Utest);
 \end{lstlisting}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
