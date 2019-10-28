@@ -10,32 +10,34 @@ classdef (Sealed) SystemSamples < handle
 % SystemSamples A container that holds samples from a stochastic kernel.
 
 properties (Hidden, Access = private)
-    %
+    % The privately stored variable corresponding to the dimensions of the
+    % system.
     Dimensions_
 
-    %
+    % The privately stored variable corresponding to the state input samples X.
     StateSamplesX_
 
-    %
+    % The privately stored variable corresponding to the control input samples
+    % U.
     InputSamplesU_
 
-    %
+    % The privately stored variable corresponding to the state output samples Y.
     StateSamplesY_
 end
 
 properties (Dependent)
-    %
+    % n The dimension of the state space samples.
     n
-    %
+    % m The dimension of the input samples.
     m
 
-    %
+    % StateSamplesX The state input samples X.
     StateSamplesX
 
-    %
+    % InputSamplesU The control input samples U.
     InputSamplesU
 
-    %
+    % StateSamplesY The state output samples Y.
     StateSamplesY
 end
 
@@ -90,6 +92,10 @@ methods
         % Store the parameters in private variables.
         obj.Dimensions_ = p.Results.Dimensions;
 
+        validateattributes(samples, {'numeric'}, {'nrows', obj.n});
+        validateattributes(samples, {'numeric'}, {'nrows', obj.m});
+        validateattributes(samples, {'numeric'}, {'nrows', obj.n});
+
         obj.StateSamplesX_ = p.Results.X;
 
         obj.InputSamplesU_ = p.Results.U;
@@ -98,40 +104,46 @@ methods
     end
 
     function n = get.n(obj)
+        % n Returns the state space dimensionality for the algorithm.
         n = obj.Dimensions_(1);
     end
 
     function m = get.m(obj)
+        % m Returns the input space dimensionality for the algorithm.
         m = obj.Dimensions_(1);
     end
 
     function samples = get.StateSamplesX(obj)
-        % StateSamplesX Returns the regularization parameter for the algorithm.
+        % StateSamplesX Returns the state space input samples for the algorithm.
         samples = obj.StateSamplesX_;
     end
 
     function set.StateSamplesX(obj, samples)
-        % StateSamplesX Sets the regularization parameter for the algorithm.
+        % StateSamplesX Sets the state space input samples for the algorithm.
+        validateattributes(samples, {'numeric'}, {'nrows', obj.n});
         obj.StateSamplesX_ = samples;
     end
 
     function samples = get.InputSamplesU(obj)
-        % InputSamplesU Returns the regularization parameter for the algorithm.
+        % InputSamplesU Returns the control input samples for the algorithm.
         samples = obj.InputSamplesU_;
     end
 
     function set.InputSamplesU(obj, samples)
-        % InputSamplesU Sets the regularization parameter for the algorithm.
+        % InputSamplesU Sets the control input samples for the algorithm.
+        validateattributes(samples, {'numeric'}, {'nrows', obj.m});
         obj.InputSamplesU_ = samples;
     end
 
     function samples = get.StateSamplesY(obj)
-        % StateSamplesY Returns the regularization parameter for the algorithm.
+        % StateSamplesY Returns the state space output samples for the
+        % algorithm.
         samples = obj.StateSamplesY_;
     end
 
     function set.StateSamplesY(obj, samples)
-        % StateSamplesY Sets the regularization parameter for the algorithm.
+        % StateSamplesY Sets the state space output samples for the algorithm.
+        validateattributes(samples, {'numeric'}, {'nrows', obj.n});
         obj.StateSamplesY_ = samples;
     end
 

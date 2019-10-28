@@ -1,8 +1,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % KernelDistributionEmbeddings Algorithm
 %
-% Implementation of the kernel distribution embeddings for stochastic
-% reachability algorithm.
+% This class sets up and validates the algorithm parameters for the
+% ComputeSafetyProbabilities function. For KernelDistributionEmbeddings, it
+% manages two parameters, sigma and lambda.
+%
+% Sigma is the kernel bandwidth parameter for the Gaussian kernel. By default,
+% the Gaussian kernel is the only available kernel for the code. It is
+% hard-coded into the ComputeKernel function, and must be changed in the source
+% if you wish to use a different kernel function.
+%
+% Lambda is the regularization parameter, which determines how smooth the
+% approximation is. In theory, the lambda parameter should decrease to zero as
+% the number of samples is increased. However, in paractice, lambda is left as
+% the default, 1.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classdef (Sealed) KernelDistributionEmbeddings < AlgorithmBaseClass

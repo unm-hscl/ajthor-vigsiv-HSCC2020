@@ -1,6 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % KernelDistributionEmbeddingsRFF implementation
 %
+% Implementation of the kernel distribution embeddings for stochastic
+% reachability using random Fourier features (RFF) algorithm.
+% 
+% The ComputeSafetyProbabilities function is the main implementation of the
+% algorithm. It usually takes a problem, some samples, and test points, and
+% computes the point-based safety probabilities for a particular stochastic
+% reachability problem.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function Pr = ComputeSafetyProbabilities(algorithm, problem, samples, Xtest, varargin)
 % implementation of the KernelDistributionEmbeddings algorithm.

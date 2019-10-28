@@ -1,6 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % AlgorithmBaseClass
 %
+% The AlgorithmBaseClass is an abstract parent class for all algorithms. The
+% primary purpose of the AlgorithmBaseClass is to ensure that all algorithms
+% implement the same function, `ComputeSafetyProbabilities`.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classdef (Abstract) AlgorithmBaseClass < handle
 % AlgorithmBaseClass The abstract base class for all algorithms. All algorithm
@@ -10,6 +14,8 @@ classdef (Abstract) AlgorithmBaseClass < handle
 methods
     function obj = AlgorithmBaseClass(varargin)
         % AlgorithmBaseClass The parent class constructor for all problems.
+
+        % Empty
 
     end
 end

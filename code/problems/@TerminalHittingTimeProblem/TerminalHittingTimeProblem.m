@@ -1,6 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TerminalHittingTimeProblem Algorithm
 %
+% The terminal-hitting time problem is defined as the probability that a system
+% will reach a target set at the final time of the time horizon while remaining
+% safe until it reaches the target set.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classdef TerminalHittingTimeProblem < ProblemBaseClass
 % TerminalHittingTimeProblem A problem description class for the first-hitting

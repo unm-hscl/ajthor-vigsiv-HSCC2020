@@ -1,6 +1,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ProblemBaseClass
 %
+% The ProblemBaseClass is an abstract parent class for all problem. The
+% primary purpose of the ProblemBaseClass is to ensure that all algorithms
+% implement the same properties, the TimeHorizon, ConstraintSet, and TargetSet.
+%
+% The TimeHorizon is specified as a positive integer value, which represents the
+% number of time steps the algorithm computes the safety probabilities for.
+%
+% The ConstraintSet and TargetSet are specified as functions. These can either
+% be function handles or anonymous matlab functions. They are modeled as
+% indicator functions, meaning they should return either one or zero depending
+% on whether a point is inside the set or not.
+% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classdef (Abstract) ProblemBaseClass < handle
 % ProblemBaseClass The abstract base class for all problems. All problem classes

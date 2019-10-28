@@ -1,8 +1,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % KernelDistributionEmbeddingsRFF Algorithm
 %
-% Implementation of the kernel distribution embeddings for stochastic
-% reachability using random Fourier features (RFF) algorithm.
+% This class sets up and validates the algorithm parameters for the
+% ComputeSafetyProbabilities function. For KernelDistributionEmbeddingsRFF, it
+% manages three parameters, sigma, lambda, and D.
+%
+% Sigma is the kernel bandwidth parameter for the Gaussian kernel. By default,
+% the Gaussian kernel is the only available kernel for the code. It is
+% hard-coded into the ComputeKernel function, and must be changed in the source
+% if you wish to use a different kernel function.
+%
+% Lambda is the regularization parameter, which determines how smooth the
+% approximation is. In theory, the lambda parameter should decrease to zero as
+% the number of samples is increased. However, in paractice, lambda is left as
+% the default, 1.
+%
+% D is the number of frequency samples used by the kernel approximation via RFF.
+% Increasing the number of frequency samples should increase the quality of the
+% approximation computed via the KernelDistributionEmbeddingsRFF algorithm.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 classdef (Sealed) KernelDistributionEmbeddingsRFF < AlgorithmBaseClass
@@ -21,6 +36,9 @@ properties (Access = private)
     % be strictly positive.
     Sigma_  (1, 1) {mustBeNumeric, mustBePositive} = 0.1
 
+    % The privately stored variable corresponding to the number of frequency
+    % samples D. D is defined as a numeric, scalar value that must be strictly
+    % positive.
     D_  (1, 1) {mustBeNumeric, mustBePositive} = 0.1
 end
 
@@ -31,6 +49,7 @@ properties (Dependent)
     % Sigma The kernel bandwidth parameter for the algorithm.
     Sigma
 
+    % D The number of frequency samples for the algorithm.
     D
 end
 
@@ -108,10 +127,12 @@ methods
     end
 
     function d = get.D(obj)
+        % D Returns the number of frequency samples parameter for the algorithm.
         d = obj.D_;
     end
 
     function set.D(obj, d)
+        % D Sets the number of frequency samples parameter for the algorithm.
         obj.D_ = d;
     end
 end
